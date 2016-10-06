@@ -25,9 +25,15 @@ public class InputController {
     Bitmap bitmapRight;
     Bitmap bitmapUp;
 
+    int screenWidth;
+    int screenHeight;
+
     boolean bitmapsOn = true;
 
     InputController(Context context, int pixelsPerMeter, int screenWidth, int screenHeight) {
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+
         int buttonWidth = 3 * pixelsPerMeter;
         int buttonHeight = 3 * pixelsPerMeter;
         int buttonPadding = pixelsPerMeter / 2;
@@ -78,10 +84,10 @@ public class InputController {
                                  buttonPadding + buttonWidth,
                                  zoomIn.bottom);
 
-        resetLocation = new Rect(toggleBitmaps.left,
-                                 increaseGravity.top,
-                                 toggleBitmaps.right,
-                                 increaseGravity.bottom);
+        resetLocation = new Rect(toggleBitmaps.right + buttonPadding,
+                                 toggleBitmaps.top,
+                                 toggleBitmaps.right * 2,
+                                 toggleBitmaps.bottom);
     }
 
     private Bitmap prepareBitmap(Context context, String bitmapName, int pixelsPerMeter) {
@@ -107,15 +113,21 @@ public class InputController {
             int x = (int) motionEvent.getX(i);
             int y = (int) motionEvent.getY(i);
 
-            if(right.contains(x, y)) {
-                levelManager.player.setPressingRight(true);
-                levelManager.player.setPressingLeft(false);
-            }
-            else if(left.contains(x, y)) {
+            // Extend the controls' touch area
+            Rect leftArea = new Rect(0, 0, left.right, screenHeight);
+            Rect rightArea = new Rect(right.left, 0, right.right, screenHeight);
+            Rect upArea = new Rect(up.left, 0, screenWidth, screenHeight);
+
+            if(leftArea.contains(x, y)) {
                 levelManager.player.setPressingLeft(true);
                 levelManager.player.setPressingRight(false);
             }
-            if(up.contains(x, y)) {
+            else if(rightArea.contains(x, y)) {
+                levelManager.player.setPressingLeft(false);
+                levelManager.player.setPressingRight(true);
+            }
+
+            if(upArea.contains(x, y)) {
                 levelManager.player.startJump();
             }
 
@@ -239,6 +251,7 @@ public class InputController {
         bitmapList.add(bitmapLeft);
         bitmapList.add(bitmapRight);
         bitmapList.add(bitmapUp);
+
         return bitmapList;
     }
 }
