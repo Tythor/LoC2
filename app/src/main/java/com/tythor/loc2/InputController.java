@@ -126,6 +126,10 @@ public class InputController {
                 levelManager.player.setPressingLeft(false);
                 levelManager.player.setPressingRight(true);
             }
+            else {
+                levelManager.player.setPressingLeft(false);
+                levelManager.player.setPressingRight(false);
+            }
 
             if(upArea.contains(x, y)) {
                 levelManager.player.startJump();
