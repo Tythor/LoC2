@@ -149,19 +149,19 @@ public class GameView extends SurfaceView implements Runnable {
                 paint.setTextAlign(Paint.Align.LEFT);
                 paint.setColor(Color.argb(255, 255, 255, 255));
 
-                canvas.drawText("FPS: " + fps, 10, 30, paint);
+                canvas.drawText("FPS: " + fps, 930, 60, paint);
                 canvas.drawText("Total Objects: " + (levelManager.gameObjects.size() - viewport.getNumberOfClippedObjects()) + "/" + levelManager.gameObjects.size(),
-                                10,
-                                60,
+                                930,
+                                90,
                                 paint);
-                canvas.drawText("Current Gravity: " + levelManager.player.upGravity, 10, 90, paint);
+                canvas.drawText("Current Gravity: " + levelManager.player.upGravity, 930, 120, paint);
                 canvas.drawText("Player's Velocity " + levelManager.player.getXVelocity() + "/" + levelManager.player.getYVelocity(),
-                                10,
-                                120,
+                                930,
+                                150,
                                 paint);
                 canvas.drawText("Player's Location: " + levelManager.player.getWorldLocation().x + ", " + levelManager.player.getWorldLocation().y,
-                                10,
-                                150,
+                                930,
+                                180,
                                 paint);
 
                 /*Player player = (Player) levelManager.gameObjects.get(levelManager.playerIndex);
@@ -307,7 +307,7 @@ public class GameView extends SurfaceView implements Runnable {
     private void drawButtons() {
         paint.setColor(Color.argb(80, 255, 255, 255));
         // Debugging: set i = 3 to i = 0
-        for(int i = 3; i < inputController.getButtonList().size(); i++) {
+        for(int i = 4; i < inputController.getButtonList().size(); i++) {
             RectF button = new RectF(inputController.getButtonList().get(i).left,
                                      inputController.getButtonList().get(i).top,
                                      inputController.getButtonList().get(i).right,

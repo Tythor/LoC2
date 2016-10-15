@@ -24,10 +24,12 @@ public class InputController {
     Rect deccreaseGravity;
     Rect toggleBitmaps;
     Rect resetLocation;
+    Rect pauseButton;
 
     Bitmap bitmapLeft;
     Bitmap bitmapRight;
     Bitmap bitmapUp;
+    Bitmap bitmapPauseButton;
 
     Rect leftArea;
     Rect rightArea;
@@ -41,29 +43,26 @@ public class InputController {
         this.screenHeight = screenHeight;
 
         // Buttons are 3 x 3
-        int buttonWidth = 3 * pixelsPerMeter;
-        int buttonHeight = 3 * pixelsPerMeter;
+        int buttonWidth = pixelsPerMeter * 3;
+        int buttonHeight = pixelsPerMeter * 3;
         int buttonPadding = pixelsPerMeter / 2;
 
         left = new Rect(buttonPadding,
                         screenHeight - buttonHeight - buttonPadding,
                         buttonPadding + buttonWidth,
                         screenHeight - buttonPadding);
-
         bitmapLeft = prepareBitmap(context, "arrowleft");
 
         right = new Rect(buttonWidth + buttonPadding * 3,
                          screenHeight - buttonHeight - buttonPadding,
                          buttonWidth * 2 + buttonPadding * 3,
                          screenHeight - buttonPadding);
-
         bitmapRight = prepareBitmap(context, "arrowright");
 
         up = new Rect(screenWidth - buttonWidth - buttonPadding,
                       screenHeight - buttonHeight - buttonPadding,
                       screenWidth - buttonPadding,
                       screenHeight - buttonPadding);
-
         bitmapUp = prepareBitmap(context, "arrowup");
 
         zoomIn = new Rect(screenWidth - buttonPadding - buttonWidth,
@@ -86,16 +85,19 @@ public class InputController {
                                     zoomOut.right,
                                     increaseGravity.bottom);
 
-        resetLocation = new Rect(buttonPadding,
+        resetLocation = new Rect(buttonPadding * 2 + buttonWidth,
                 zoomIn.top,
-                buttonPadding + buttonWidth,
+                buttonPadding * 2 + buttonWidth * 2,
                 zoomIn.bottom);
 
         toggleBitmaps = new Rect(resetLocation.right + buttonPadding,
                 resetLocation.top,
-                resetLocation.right * 2,
+                resetLocation.right + buttonPadding + buttonWidth,
                 resetLocation.bottom);
 
+        pauseButton = new Rect((int) (buttonWidth / 7.5), (int) (buttonHeight / 7.5), (int) (buttonWidth / 2.5), (int) (buttonHeight / 2.5));
+        System.out.println(pauseButton.width() + ", " + pauseButton.height());
+        bitmapPauseButton = prepareBitmap(context, "pausebutton");
 
         leftArea = new Rect(0, 0, left.right + pixelsPerMeter / 2, screenHeight);
         rightArea = new Rect(right.left - pixelsPerMeter / 2, 0, right.right, screenHeight);
@@ -114,6 +116,10 @@ public class InputController {
                                            3 * pixelsPerMeter,
                                            3 * pixelsPerMeter,
                                            false);
+
+        if(bitmapName.equals("pausebutton")) {
+            bitmap = Bitmap.createScaledBitmap(bitmap, (int) ((pixelsPerMeter * 3) / 1.875), (int) ((pixelsPerMeter * 3) / 1.875), false);
+        }
         return bitmap;
     }
 
@@ -125,8 +131,6 @@ public class InputController {
             int y = (int) motionEvent.getY(i);
 
             // Extend the controls' touch area
-
-
             if(leftArea.contains(x, y)) {
                 levelManager.player.setPressingLeft(true);
                 levelManager.player.setPressingRight(false);
@@ -218,6 +222,7 @@ public class InputController {
         buttonList.add(left);
         buttonList.add(right);
         buttonList.add(up);
+        buttonList.add(pauseButton);
         buttonList.add(zoomIn);
         buttonList.add(zoomOut);
         buttonList.add(increaseGravity);
@@ -234,6 +239,7 @@ public class InputController {
         bitmapList.add(bitmapLeft);
         bitmapList.add(bitmapRight);
         bitmapList.add(bitmapUp);
+        bitmapList.add(bitmapPauseButton);
 
         return bitmapList;
     }
