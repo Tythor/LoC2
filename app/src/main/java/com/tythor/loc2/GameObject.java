@@ -35,14 +35,22 @@ public abstract class GameObject {
                                                          "drawable",
                                                          context.getPackageName());
 
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+
+        long timeStart = System.currentTimeMillis();
+
         // Fetch the bitmap
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID, options);
+
+        System.out.println(bitmap.getDensity() + " " + bitmap.getWidth() + " " + bitmap.getHeight() + " " + bitmap.getByteCount());
 
         // Scale the bitmap
         bitmap = Bitmap.createScaledBitmap(bitmap,
                                            (int) (worldLocation.width * pixelsPerMeter),
                                            (int) (worldLocation.height * pixelsPerMeter),
                                            false);
+        System.out.println(System.currentTimeMillis() - timeStart);
         return bitmap;
     }
 

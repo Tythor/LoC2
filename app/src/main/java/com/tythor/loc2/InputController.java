@@ -11,6 +11,10 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 
 public class InputController {
+    int pixelsPerMeter;
+    int screenWidth;
+    int screenHeight;
+
     Rect left;
     Rect right;
     Rect up;
@@ -25,15 +29,18 @@ public class InputController {
     Bitmap bitmapRight;
     Bitmap bitmapUp;
 
-    int screenWidth;
-    int screenHeight;
+    Rect leftArea;
+    Rect rightArea;
+    Rect upArea;
 
     boolean bitmapsOn = true;
 
     InputController(Context context, int pixelsPerMeter, int screenWidth, int screenHeight) {
+        this.pixelsPerMeter = pixelsPerMeter;
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
+        // Buttons are 3 x 3
         int buttonWidth = 3 * pixelsPerMeter;
         int buttonHeight = 3 * pixelsPerMeter;
         int buttonPadding = pixelsPerMeter / 2;
@@ -43,21 +50,21 @@ public class InputController {
                         buttonPadding + buttonWidth,
                         screenHeight - buttonPadding);
 
-        bitmapLeft = prepareBitmap(context, "arrowleft", pixelsPerMeter);
+        bitmapLeft = prepareBitmap(context, "arrowleft");
 
-        right = new Rect(buttonWidth + buttonPadding * 2,
+        right = new Rect(buttonWidth + buttonPadding * 3,
                          screenHeight - buttonHeight - buttonPadding,
-                         buttonWidth * 2 + buttonPadding * 2,
+                         buttonWidth * 2 + buttonPadding * 3,
                          screenHeight - buttonPadding);
 
-        bitmapRight = prepareBitmap(context, "arrowright", pixelsPerMeter);
+        bitmapRight = prepareBitmap(context, "arrowright");
 
         up = new Rect(screenWidth - buttonWidth - buttonPadding,
-                        screenHeight - buttonHeight - buttonPadding,
-                        screenWidth - buttonPadding,
-                        screenHeight - buttonPadding);
+                      screenHeight - buttonHeight - buttonPadding,
+                      screenWidth - buttonPadding,
+                      screenHeight - buttonPadding);
 
-        bitmapUp = prepareBitmap(context, "arrowup", pixelsPerMeter);
+        bitmapUp = prepareBitmap(context, "arrowup");
 
         zoomIn = new Rect(screenWidth - buttonPadding - buttonWidth,
                           buttonPadding,
@@ -79,18 +86,23 @@ public class InputController {
                                     zoomOut.right,
                                     increaseGravity.bottom);
 
-        toggleBitmaps = new Rect(buttonPadding,
-                                 zoomIn.top,
-                                 buttonPadding + buttonWidth,
-                                 zoomIn.bottom);
+        resetLocation = new Rect(buttonPadding,
+                zoomIn.top,
+                buttonPadding + buttonWidth,
+                zoomIn.bottom);
 
-        resetLocation = new Rect(toggleBitmaps.right + buttonPadding,
-                                 toggleBitmaps.top,
-                                 toggleBitmaps.right * 2,
-                                 toggleBitmaps.bottom);
+        toggleBitmaps = new Rect(resetLocation.right + buttonPadding,
+                resetLocation.top,
+                resetLocation.right * 2,
+                resetLocation.bottom);
+
+
+        leftArea = new Rect(0, 0, left.right + pixelsPerMeter / 2, screenHeight);
+        rightArea = new Rect(right.left - pixelsPerMeter / 2, 0, right.right, screenHeight);
+        upArea = new Rect(up.left, 0, screenWidth, screenHeight);
     }
 
-    private Bitmap prepareBitmap(Context context, String bitmapName, int pixelsPerMeter) {
+    private Bitmap prepareBitmap(Context context, String bitmapName) {
         int resID = context.getResources().getIdentifier(bitmapName,
                                                          "drawable",
                                                          context.getPackageName());
@@ -109,14 +121,11 @@ public class InputController {
         int pointerCount = motionEvent.getPointerCount();
 
         for(int i = 0; i < pointerCount; i++) {
-
             int x = (int) motionEvent.getX(i);
             int y = (int) motionEvent.getY(i);
 
             // Extend the controls' touch area
-            Rect leftArea = new Rect(0, 0, left.right, screenHeight);
-            Rect rightArea = new Rect(right.left, 0, right.right, screenHeight);
-            Rect upArea = new Rect(up.left, 0, screenWidth, screenHeight);
+
 
             if(leftArea.contains(x, y)) {
                 levelManager.player.setPressingLeft(true);
@@ -126,16 +135,18 @@ public class InputController {
                 levelManager.player.setPressingLeft(false);
                 levelManager.player.setPressingRight(true);
             }
-            else {
-                levelManager.player.setPressingLeft(false);
-                levelManager.player.setPressingRight(false);
-            }
 
             if(upArea.contains(x, y)) {
                 levelManager.player.startJump();
             }
+            else if(!(leftArea.contains(x, y) || rightArea.contains(x, y))) {
+                levelManager.player.setPressingLeft(false);
+                levelManager.player.setPressingRight(false);
+            }
 
-            switch(motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+            System.out.println(pointerCount + " " + motionEvent.getPointerId(i) + " " + (leftArea.contains(x, y) || rightArea.contains(x, y)) + " " + upArea.contains(x, y));
+
+            switch(motionEvent.getActionMasked() & MotionEvent.ACTION_MASK) {
 
                 case MotionEvent.ACTION_DOWN:
                     if(zoomIn.contains(x, y)) {
@@ -152,26 +163,24 @@ public class InputController {
 
                     }
                     else if(increaseGravity.contains(x, y)) {
-                        levelManager.player.gravity++;
+                        levelManager.player.upGravity++;
                     }
                     else if(deccreaseGravity.contains(x, y)) {
-                        levelManager.player.gravity--;
+                        levelManager.player.upGravity--;
                     }
                     else if(toggleBitmaps.contains(x, y)) {
                         bitmapsOn = !bitmapsOn;
                     }
                     else if(resetLocation.contains(x, y)) {
                         levelManager.player.setWorldLocationX(1);
-                        levelManager.player.setWorldLocationY(15);
+                        levelManager.player.setWorldLocationY(17);
                     }
                     break;
 
                 case MotionEvent.ACTION_UP:
                     levelManager.player.setPressingRight(false);
                     levelManager.player.setPressingLeft(false);
-
                     break;
-
 
                     /*case MotionEvent.ACTION_POINTER_DOWN:
                         if (right.contains(x, y)) {
@@ -200,41 +209,11 @@ public class InputController {
                     System.out.println("UP");
                     break;*/
             }
-            /*else {// Not playing
-                //Move the viewport around to explore the map
-                switch(motionEvent.getAction() & MotionEvent.ACTION_MASK) {
-
-                    case MotionEvent.ACTION_DOWN:
-                        if(right.contains(x, y)) {
-                            viewport.moveViewportRight(l.mapWidth);
-                            //Log.w("right:", "DOWN" );
-                        }
-                        else if(left.contains(x, y)) {
-                            viewport.moveViewportLeft();
-                            //Log.w("left:", "DOWN" );
-                        }
-                        else if(up.contains(x, y)) {
-                            viewport.moveViewportUp();
-                            //Log.w("up:", "DOWN" );/
-                        }
-                        else if(shoot.contains(x, y)) {
-                            viewport.moveViewportDown(l.mapHeight);
-                            //Log.w("shoot:", "DOWN" );/
-                        }
-                        else if(pause.contains(x, y)) {
-                            l.switchPlayingStatus();
-                            System.out.println("pause:" + "DOWN");
-                        }
-
-                        break;
-                }
-            }*/
         }
     }
 
     public ArrayList<Rect> getButtonList() {
         ArrayList<Rect> buttonList = new ArrayList<>();
-
 
         buttonList.add(left);
         buttonList.add(right);

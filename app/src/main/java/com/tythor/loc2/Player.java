@@ -7,28 +7,31 @@ import android.graphics.RectF;
 
 public class Player extends GameObject {
     final int X_VELOCITY = 6;
-    int gravity = 8;
-
     final int X_AXIS = 1;
     final int Y_AXIS = 2;
-
+    // In milliseconds
+    final long maxJumpTime = 1000;
+    int pixelsPerMeter;
+    float upGravity = 10.6f;
+    float downGravity;
     boolean pressingRight = false;
     boolean pressingLeft = false;
-
     RectF leftHitbox;
     RectF topHitbox;
     RectF rightHitbox;
     RectF bottomHitbox;
-
     boolean falling;
     int count;
-    boolean jumping;
+    boolean jumping = false;
     long timeOfJump;
-    // In milliseconds
-    final long maxJumpTime = 1000;
+    float locationOfJump;
+
+    float addedGravity;
 
     Player(Context context, WorldLocation playerLocation, int pixelsPerMeter) {
-        // Players are 0.5 x 0.75
+        this.pixelsPerMeter = pixelsPerMeter;
+
+        // Players are 0.40 x 0.55
         final float WIDTH = 0.40f;
         final float HEIGHT = 0.55f;
 
@@ -47,11 +50,10 @@ public class Player extends GameObject {
 
     @Override
     public void update(long fps) {
-        // Update player's location and direction
+        // Update player's X location and direction
         if(pressingRight) {
             setXVelocity(X_VELOCITY);
             setFacing(RIGHT);
-
         }
         else if(pressingLeft) {
             setXVelocity(-X_VELOCITY);
@@ -61,22 +63,23 @@ public class Player extends GameObject {
             setXVelocity(0);
         }
 
+        // Update player's Y location
         if(jumping) {
             long timeJumping = System.currentTimeMillis() - timeOfJump;
-            if(timeJumping < maxJumpTime) {
-                if(timeJumping < maxJumpTime / 2) {
-                    setYVelocity(-gravity);
-                }
-                else if(timeJumping > maxJumpTime / 2) {
-                    setYVelocity(gravity);
-                }
+            if(Math.abs(getWorldLocation().y - locationOfJump) < 3.5) {
+                setYVelocity(-(upGravity + addedGravity));
             }
             else {
+                setYVelocity(upGravity);
+                System.out.println("capped");
+                System.out.println(addedGravity + " " + timeJumping / 1000.00);
+                addedGravity = 0;
                 jumping = false;
             }
+            addedGravity += 0.116f;
         }
         else {
-            setYVelocity(gravity);
+            setYVelocity(upGravity);
         }
 
         move(fps);
@@ -177,6 +180,7 @@ public class Player extends GameObject {
                 setYVelocity(0);
                 canPassY = false;
                 jumping = false;
+                addedGravity = 0;
                 collided = true;
                 break;
         }
@@ -199,6 +203,7 @@ public class Player extends GameObject {
             if(!jumping) {
                 jumping = true;
                 timeOfJump = System.currentTimeMillis();
+                locationOfJump = getWorldLocation().y;
             }
         }
     }

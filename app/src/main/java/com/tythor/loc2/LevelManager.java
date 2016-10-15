@@ -53,7 +53,6 @@ public class LevelManager {
             for(int x = 0; x < levelData.blocks.get(y).length(); x++) {
                 blockType = levelData.blocks.get(y).charAt(x);
 
-
                 // Ignore empty blocks
                 if(blockType != '.') {
                     switch(blockType) {

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -18,8 +19,6 @@ public class GameView extends SurfaceView implements Runnable {
     long frameStartTime;
     long fps;
 
-    InputController inputController;
-    SoundManager soundManager;
     boolean follow = false;
     private boolean debugging = true;
     private volatile boolean running;
@@ -31,8 +30,9 @@ public class GameView extends SurfaceView implements Runnable {
     // Custom objects
     private LevelManager levelManager;
     private Viewport viewport;
-
-    long startTime = System.currentTimeMillis();
+    InputController inputController;
+    SoundManager soundManager;
+    Animation animation;
 
     GameView(Context context, int screenWidth, int screenHeight) {
         // Pass context to SurfaceView
@@ -66,8 +66,10 @@ public class GameView extends SurfaceView implements Runnable {
         inputController = new InputController(context, viewport.getPixelsPerMeter(), viewport.getScreenWidth(),
                                               viewport.getScreenHeight());
 
+        animation = new Animation(context, levelManager, viewport);
+
         // Set the viewport's location as the player's location
-        viewport.setViewportLocation(new WorldLocation(1, 15));
+        viewport.setViewportLocation(new WorldLocation(1, 17));
     }
 
     @Override
@@ -93,8 +95,6 @@ public class GameView extends SurfaceView implements Runnable {
             if(gameObject.isActive()) {
                 if(viewport.renderObject(gameObject.getWorldLocation())) {
                     gameObject.setVisible(true);
-
-
                 }
                 else {
                     gameObject.setVisible(false);
@@ -154,7 +154,7 @@ public class GameView extends SurfaceView implements Runnable {
                                 10,
                                 60,
                                 paint);
-                canvas.drawText("Current Gravity: " + levelManager.player.gravity, 10, 90, paint);
+                canvas.drawText("Current Gravity: " + levelManager.player.upGravity, 10, 90, paint);
                 canvas.drawText("Player's Velocity " + levelManager.player.getXVelocity() + "/" + levelManager.player.getYVelocity(),
                                 10,
                                 120,
@@ -207,7 +207,7 @@ public class GameView extends SurfaceView implements Runnable {
 
                     if(inputController.bitmapsOn) {
                         // Animate the player
-                        animatePlayer(gameObject);
+                        animation.animatePlayer(gameObject);
 
                         // Draw the bitmap
                         canvas.drawBitmap(levelManager.bitmapArray[levelManager.getBitmapIndex(
@@ -290,63 +290,17 @@ public class GameView extends SurfaceView implements Runnable {
                                         bitmapTemplate.left,
                                         bitmapTemplate.top,
                                         paint);
+                        canvas.drawLine(0, 0, inputController.leftArea.left, inputController.leftArea.bottom, paint);
+                        canvas.drawLine(inputController.rightArea.left, 0, inputController.rightArea.left, inputController.rightArea.bottom, paint);
+                        canvas.drawLine(inputController.rightArea.right, 0, inputController.rightArea.right, inputController.rightArea.bottom, paint);
+
+                        canvas.drawLine(inputController.upArea.left, inputController.upArea.top, inputController.upArea.left, inputController.upArea.bottom, paint);
                     }
 
                     // Force the gameObjects to update themselves
                     gameObject.update(fps);
                 }
             }
-        }
-    }
-
-    private void animatePlayer(GameObject gameObject) {
-        // Animate the player
-        if(gameObject.equals(levelManager.player) && levelManager.player.getXVelocity() != 0) {
-            if(System.currentTimeMillis() - startTime >= 80) {
-                startTime = System.currentTimeMillis();
-                String bitmapName = gameObject.getBitmapName();
-
-                if(gameObject.getBitmapName().equals("playerleft1")) {
-                    bitmapName = "playerleft2";
-                }
-                else if(gameObject.getBitmapName().equals("playerleft2")) {
-                    bitmapName = "playerleft1";
-                }
-                if(gameObject.getBitmapName().equals("playerright1")) {
-                    bitmapName = "playerright2";
-                }
-                else if(gameObject.getBitmapName().equals("playerright2")) {
-                    bitmapName = "playerright1";
-                }
-
-                gameObject.setBitmapName(bitmapName);
-                levelManager.bitmapArray[levelManager.getBitmapIndex('p')] = gameObject.prepareBitmap(
-                        context,
-                        bitmapName,
-                        viewport.pixelsPerMeter);
-            }
-        }
-
-        // Change facing direction and set idle player to idle bitmap
-        if(gameObject.equals(levelManager.player)) {
-            if(gameObject.getFacing() == 1 && (gameObject.getBitmapName().equals(
-                    "playerright1") || gameObject.getBitmapName().equals(
-                    "playerright2")) || (gameObject.getBitmapName().equals(
-                    "playerleft2") && levelManager.player.getXVelocity() == 0)) {
-                gameObject.setBitmapName("playerleft1");
-            }
-            else if(gameObject.getFacing() == 2 && (gameObject.getBitmapName().equals(
-                    "playerleft1") || gameObject.getBitmapName().equals(
-                    "playerleft2")) || (gameObject.getBitmapName().equals(
-                    "playerright2") && levelManager.player.getXVelocity() == 0)) {
-                gameObject.setBitmapName("playerright1");
-
-            }
-
-            levelManager.bitmapArray[levelManager.getBitmapIndex('p')] = gameObject.prepareBitmap(
-                    context,
-                    gameObject.getBitmapName(),
-                    viewport.pixelsPerMeter);
         }
     }
 

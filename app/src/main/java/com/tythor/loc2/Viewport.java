@@ -6,7 +6,7 @@ import android.graphics.RectF;
 
 public class Viewport {
     // Determine size of the viewport; Scale to 840 x 480
-    public int METERSTOSHOWX = 30;
+    public int METERSTOSHOWX = 28;
     public int METERSTOSHOWY = 30;
 
     private WorldLocation viewportLocation;
@@ -28,8 +28,8 @@ public class Viewport {
         screenCenterX = screenWidth / 2;
         screenCenterY = screenHeight / 2;
 
-        // Set smaller than viewport
-        pixelsPerMeter = screenWidth / (METERSTOSHOWX - 2);
+        pixelsPerMeter = screenWidth / (METERSTOSHOWX);
+        System.out.println(screenWidth + "/" + (METERSTOSHOWX));
 
         screenLocation = new RectF();
         viewportLocation = new WorldLocation();
