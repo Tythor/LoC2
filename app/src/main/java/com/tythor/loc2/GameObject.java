@@ -28,29 +28,52 @@ public abstract class GameObject {
     // Force the gameObjects to update themselves
     public abstract void update(long fps);
 
+    // Bitmap optimization
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both height and width larger than the requested height and width
+            while ((halfHeight / inSampleSize) >= reqHeight && (halfWidth / inSampleSize) >= reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     // Label, fetch, scale, then return the bitmap
     public Bitmap prepareBitmap(Context context, String bitmapName, int pixelsPerMeter) {
+        long timeStart = System.currentTimeMillis();
+
         // Label the bitmap
         int resID = context.getResources().getIdentifier(bitmapName,
                                                          "drawable",
                                                          context.getPackageName());
 
+        // Optimization
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.RGB_565;
-
-        long timeStart = System.currentTimeMillis();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeResource(context.getResources(), resID, options);
+        options.inSampleSize = calculateInSampleSize(options, (int) (worldLocation.width * pixelsPerMeter), (int) (worldLocation.height * pixelsPerMeter));
+        options.inJustDecodeBounds = false;
 
         // Fetch the bitmap
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID, options);
-
-        System.out.println(bitmap.getDensity() + " " + bitmap.getWidth() + " " + bitmap.getHeight() + " " + bitmap.getByteCount());
 
         // Scale the bitmap
         bitmap = Bitmap.createScaledBitmap(bitmap,
                                            (int) (worldLocation.width * pixelsPerMeter),
                                            (int) (worldLocation.height * pixelsPerMeter),
                                            false);
-        System.out.println(System.currentTimeMillis() - timeStart);
+        System.out.println((System.currentTimeMillis() - timeStart) / 1000.0 + "s");
         return bitmap;
     }
 

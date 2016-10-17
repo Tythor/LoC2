@@ -109,8 +109,11 @@ public class InputController {
                                                          "drawable",
                                                          context.getPackageName());
 
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.RGB_565;
+
         // Return the bitmap
-        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID, options);
 
         bitmap = Bitmap.createScaledBitmap(bitmap,
                                            3 * pixelsPerMeter,

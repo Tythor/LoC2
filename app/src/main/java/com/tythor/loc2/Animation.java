@@ -45,7 +45,7 @@ public class Animation {
 
     public void animatePlayer(GameObject gameObject) {
         // Animate the player
-        if(gameObject.equals(levelManager.player) && levelManager.player.getXVelocity() != 0) {
+        if((gameObject.equals(levelManager.player) && levelManager.player.getXVelocity() != 0) || (levelManager.player.pressingLeft || levelManager.player.pressingRight)) {
             if(System.currentTimeMillis() - startTime >= 80) {
                 startTime = System.currentTimeMillis();
 
@@ -72,15 +72,13 @@ public class Animation {
         if(gameObject.equals(levelManager.player)) {
             if(gameObject.getFacing() == 1 && (gameObject.getBitmapName().equals(
                     "playerright1") || gameObject.getBitmapName().equals(
-                    "playerright2")) || (gameObject.getBitmapName().equals(
-                    "playerleft2") && levelManager.player.getXVelocity() == 0)) {
+                    "playerright2") || (levelManager.player.pressingLeft == false && levelManager.player.pressingRight == false))) {
                 gameObject.setBitmapName("playerleft1");
                 levelManager.bitmapArray[levelManager.getBitmapIndex('p')] = playerLeft1;
             }
             else if(gameObject.getFacing() == 2 && (gameObject.getBitmapName().equals(
                     "playerleft1") || gameObject.getBitmapName().equals(
-                    "playerleft2")) || (gameObject.getBitmapName().equals(
-                    "playerright2") && levelManager.player.getXVelocity() == 0)) {
+                    "playerleft2") || (levelManager.player.pressingLeft == false && levelManager.player.pressingRight == false))) {
                 levelManager.bitmapArray[levelManager.getBitmapIndex('p')] = playerRight1;
                 gameObject.setBitmapName("playerright1");
             }
