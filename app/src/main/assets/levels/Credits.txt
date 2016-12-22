@@ -1,0 +1,23 @@
+Credits, Munro, 50, 40, 0, 0
+Developed by, MunroSmall, 30, 70, 0, 0
+THOMAS PATIERNO, Munro, 50, 50, 0, 0
+Testers, MunroSmall, 30, 70, 0, 0
+David, Munro, 20, 35, 3, 0
+Josh, Munro, 20, 25, 3, 0
+Trevor, Munro, 20, 25, 3, 0
+Claire, Munro, 20, 25, 2, 1
+James, Munro, 20, 25, 2, 0
+Jonathan, Munro, 20, 25, 2, 0
+Michael, Munro, 20, 25, 2, 0
+TJ, Munro, 20, 25, 2, 0
+Dylan, Munro, 20, 25, 1, 0
+Joel, Munro, 20, 25, 1, 0
+Joey, Munro, 20, 25, 1, 0
+Kyle, Munro, 20, 25, 1, 0
+Le, Munro, 20, 25, 1, 1
+Ryan, Munro, 20, 25, 1, 0
+Therese, Munro, 20, 25, 1, 1
+Tyler, Munro, 20, 25, 1, 0
+Fonts from tenbytwenty.com, MunroSmall, 30, 60, 0, 0
+Inspired by, MunroSmall, 30, 60, 0, 0
+I WANNA BE THE GUY, Munro, 40, 45, 0, 0

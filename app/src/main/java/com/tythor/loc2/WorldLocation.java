@@ -8,7 +8,7 @@ public class WorldLocation {
     float y;
     int z;
 
-    // Size; Blocks/Players
+    // Size
     float width;
     float height;
 

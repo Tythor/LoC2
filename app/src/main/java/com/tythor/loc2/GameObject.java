@@ -8,6 +8,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 
 public abstract class GameObject {
+    private Context context = GameView.context;
+    private int pixelsPerMeter = GameView.viewport.pixelsPerMeter;
+
     // Facing
     final int LEFT = 1;
     final int RIGHT = 2;
@@ -16,7 +19,7 @@ public abstract class GameObject {
     private WorldLocation worldLocation;
     private boolean active = true;
     private boolean visible = true;
-    private char blockType;
+    private String blockType;
     private String bitmapName;
     private float xVelocity = 0;
     private float yVelocity = 0;
@@ -49,7 +52,7 @@ public abstract class GameObject {
     }
 
     // Label, fetch, scale, then return the bitmap
-    public Bitmap prepareBitmap(Context context, String bitmapName, int pixelsPerMeter) {
+    public Bitmap prepareBitmap(String bitmapName) {
         long timeStart = System.currentTimeMillis();
 
         // Label the bitmap
@@ -68,16 +71,19 @@ public abstract class GameObject {
         // Fetch the bitmap
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID, options);
 
-        // Scale the bitmap
+        // Scale the bitmap; divided by block size
         bitmap = Bitmap.createScaledBitmap(bitmap,
-                                           (int) (worldLocation.width * pixelsPerMeter),
-                                           (int) (worldLocation.height * pixelsPerMeter),
+                                           (int) (worldLocation.width * pixelsPerMeter / 20),
+                                           (int) (worldLocation.height * pixelsPerMeter / 20),
                                            false);
+
+        System.out.println(bitmap.getWidth() + " x " + bitmap.getHeight());
         System.out.println((System.currentTimeMillis() - timeStart) / 1000.0 + "s");
+
         return bitmap;
     }
 
-    public void setupGameObject(char blockType, String bitmapName, WorldLocation worldLocation) {
+    public void setupGameObject(String blockType, String bitmapName, WorldLocation worldLocation) {
         this.blockType = blockType;
         this.bitmapName = bitmapName;
         this.worldLocation = worldLocation;
@@ -88,7 +94,7 @@ public abstract class GameObject {
         objectHitbox.bottom = worldLocation.y + 1;
     }
 
-    public void setupGameObject(char blockType, String bitmapName, WorldLocation worldLocation, int facing, boolean movable, boolean active, boolean visible) {
+    public void setupGameObject(String blockType, String bitmapName, WorldLocation worldLocation, int facing, boolean movable, boolean active, boolean visible) {
         this.blockType = blockType;
         this.bitmapName = bitmapName;
         this.worldLocation = worldLocation;
@@ -100,15 +106,8 @@ public abstract class GameObject {
 
     // Update GameObject's location
     public void move(long fps) {
-        if(canPassX) {
-            worldLocation.x += xVelocity / fps;
-        }
-        if(canPassY) {
-            worldLocation.y += yVelocity / fps;
-        }
-        if(!canPassX || !canPassY) {
-            System.out.println("CAN'T PASS");
-        }
+        worldLocation.x += xVelocity / fps;
+        worldLocation.y += yVelocity / fps;
     }
 
     public WorldLocation getWorldLocation() {
@@ -147,7 +146,7 @@ public abstract class GameObject {
         this.visible = visible;
     }
 
-    public char getBlockType() {
+    public String getBlockType() {
         return blockType;
     }
 

@@ -3,13 +3,39 @@ package com.tythor.loc2;
 // Created by Tythor on 8/25/2016
 
 public class Block extends GameObject {
-    Block(int startLocationX, int startLocationY, char blockType) {
+    Block(float startLocationX, float startLocationY, String blockType) {
         // Blocks are 1 x 1
-        final float WIDTH = 1;
-        final float HEIGHT = 1;
-        WorldLocation worldLocation = new WorldLocation(startLocationX, startLocationY, 0, WIDTH, HEIGHT);
+        final float WIDTH = 20;
+        final float HEIGHT = 20;
+        WorldLocation worldLocation = new WorldLocation(startLocationX, startLocationY, 1, WIDTH, HEIGHT);
+        String bitmapName = "";
 
-        setupGameObject(blockType, "greenblock", worldLocation);
+        switch(blockType) {
+            case "B":
+                bitmapName = "blueblock";
+                break;
+
+            case "G":
+                bitmapName = "greenblock";
+                break;
+
+            case "O":
+                bitmapName = "orangeblock";
+                break;
+
+            case "Pi":
+                bitmapName = "pinkblock";
+                break;
+
+            case "Pu":
+                bitmapName = "purpleblock";
+                break;
+            case "R":
+                bitmapName = "redblock";
+                break;
+        }
+
+        setupGameObject(blockType, bitmapName, worldLocation);
     }
 
     @Override

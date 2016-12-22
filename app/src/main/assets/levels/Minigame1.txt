@@ -1,0 +1,14 @@
+#misc
+size, 20, 20
+spawn, 246, 189, 1
+special, 6
+area, 1
+name, MINIGAME
+exitP, Exit Minigame, PREVIOUS
+music, 7
+#blocks
+10; 1, -60; -60, O
+10; 2, -60; -60, O
+#spikes
+#b1
+#b2

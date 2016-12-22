@@ -11,9 +11,10 @@ import android.view.MotionEvent;
 import java.util.ArrayList;
 
 public class InputController {
-    int pixelsPerMeter;
-    int screenWidth;
-    int screenHeight;
+    Context context = GameView.context;
+    LevelManager levelManager = GameView.levelManager;
+    Viewport viewport = GameView.viewport;
+    int pixelsPerMeter = GameView.viewport.pixelsPerMeter;
 
     Rect left;
     Rect right;
@@ -37,10 +38,9 @@ public class InputController {
 
     boolean bitmapsOn = true;
 
-    InputController(Context context, int pixelsPerMeter, int screenWidth, int screenHeight) {
-        this.pixelsPerMeter = pixelsPerMeter;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    InputController() {
+        int screenWidth = viewport.getScreenWidth();
+        int screenHeight = viewport.getScreenHeight();
 
         // Buttons are 3 x 3
         int buttonWidth = pixelsPerMeter * 3;
@@ -51,19 +51,19 @@ public class InputController {
                         screenHeight - buttonHeight - buttonPadding,
                         buttonPadding + buttonWidth,
                         screenHeight - buttonPadding);
-        bitmapLeft = prepareBitmap(context, "arrowleft");
+        bitmapLeft = prepareBitmap("arrowleft");
 
         right = new Rect(buttonWidth + buttonPadding * 3,
                          screenHeight - buttonHeight - buttonPadding,
                          buttonWidth * 2 + buttonPadding * 3,
                          screenHeight - buttonPadding);
-        bitmapRight = prepareBitmap(context, "arrowright");
+        bitmapRight = prepareBitmap("arrowright");
 
         up = new Rect(screenWidth - buttonWidth - buttonPadding,
                       screenHeight - buttonHeight - buttonPadding,
                       screenWidth - buttonPadding,
                       screenHeight - buttonPadding);
-        bitmapUp = prepareBitmap(context, "arrowup");
+        bitmapUp = prepareBitmap("arrowup");
 
         zoomIn = new Rect(screenWidth - buttonPadding - buttonWidth,
                           buttonPadding,
@@ -97,14 +97,14 @@ public class InputController {
 
         pauseButton = new Rect((int) (buttonWidth / 7.5), (int) (buttonHeight / 7.5), (int) (buttonWidth / 2.5), (int) (buttonHeight / 2.5));
         System.out.println(pauseButton.width() + ", " + pauseButton.height());
-        bitmapPauseButton = prepareBitmap(context, "pausebutton");
+        bitmapPauseButton = prepareBitmap("pausebutton");
 
         leftArea = new Rect(0, 0, left.right + pixelsPerMeter / 2, screenHeight);
         rightArea = new Rect(right.left - pixelsPerMeter / 2, 0, right.right, screenHeight);
         upArea = new Rect(up.left, 0, screenWidth, screenHeight);
     }
 
-    private Bitmap prepareBitmap(Context context, String bitmapName) {
+    private Bitmap prepareBitmap(String bitmapName) {
         int resID = context.getResources().getIdentifier(bitmapName,
                                                          "drawable",
                                                          context.getPackageName());
@@ -126,7 +126,7 @@ public class InputController {
         return bitmap;
     }
 
-    public void handleInput(MotionEvent motionEvent, LevelManager levelManager, SoundManager soundManager, Viewport viewport) {
+    public void handleInput(MotionEvent motionEvent) {
         int pointerCount = motionEvent.getPointerCount();
 
         for(int i = 0; i < pointerCount; i++) {
@@ -151,8 +151,6 @@ public class InputController {
                 levelManager.player.setPressingRight(false);
             }
 
-            System.out.println(pointerCount + " " + motionEvent.getPointerId(i) + " " + (leftArea.contains(x, y) || rightArea.contains(x, y)) + " " + upArea.contains(x, y));
-
             switch(motionEvent.getActionMasked() & MotionEvent.ACTION_MASK) {
 
                 case MotionEvent.ACTION_DOWN:
@@ -170,17 +168,17 @@ public class InputController {
 
                     }
                     else if(increaseGravity.contains(x, y)) {
-                        levelManager.player.upGravity++;
+                        levelManager.player.upGravity += 10;
                     }
                     else if(deccreaseGravity.contains(x, y)) {
-                        levelManager.player.upGravity--;
+                        levelManager.player.upGravity -= 10;
                     }
                     else if(toggleBitmaps.contains(x, y)) {
                         bitmapsOn = !bitmapsOn;
                     }
                     else if(resetLocation.contains(x, y)) {
-                        levelManager.player.setWorldLocationX(1);
-                        levelManager.player.setWorldLocationY(17);
+                        levelManager.player.setWorldLocationX(levelManager.player.spawnLocation.x);
+                        levelManager.player.setWorldLocationY(levelManager.player.spawnLocation.y);
                     }
                     break;
 

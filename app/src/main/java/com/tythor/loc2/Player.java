@@ -6,16 +6,17 @@ import android.content.Context;
 import android.graphics.RectF;
 
 public class Player extends GameObject {
-    final int X_VELOCITY = 6;
+    final int X_VELOCITY = 100;
     final int X_AXIS = 1;
     final int Y_AXIS = 2;
     // In milliseconds
     final long maxJumpTime = 1000;
-    int pixelsPerMeter;
-    float upGravity = 10.6f;
+    float upGravity = 10f; // 10.6f
     float downGravity;
     boolean pressingRight = false;
     boolean pressingLeft = false;
+    WorldLocation playerLocation;
+    WorldLocation spawnLocation;
     RectF leftHitbox;
     RectF topHitbox;
     RectF rightHitbox;
@@ -28,18 +29,18 @@ public class Player extends GameObject {
 
     float addedGravity;
 
-    Player(Context context, WorldLocation playerLocation, int pixelsPerMeter) {
-        this.pixelsPerMeter = pixelsPerMeter;
+    Player(WorldLocation playerLocation) {
 
         // Players are 0.40 x 0.55
-        final float WIDTH = 0.40f;
-        final float HEIGHT = 0.55f;
+        final float WIDTH = 8;
+        final float HEIGHT = 11;
 
-        playerLocation.z = 0;
+        spawnLocation = playerLocation;
+        playerLocation.z = 2;
         playerLocation.width = WIDTH;
         playerLocation.height = HEIGHT;
 
-        setupGameObject('p', "playerleft1", playerLocation, LEFT, true, true, true);
+        setupGameObject("p", "playerleft1", playerLocation, LEFT, true, true, true);
 
         // Hitboxes
         leftHitbox = new RectF();
@@ -83,38 +84,41 @@ public class Player extends GameObject {
         }
 
         move(fps);
+    }
 
-        WorldLocation playerLocation = getWorldLocation();
+    public void setPlayerHitboxes() {
+        // Get player's location
+        playerLocation = getWorldLocation();
 
         // Set hitboxes
-        leftHitbox.left = playerLocation.x;
-        leftHitbox.top = playerLocation.y + 0.15f;
+        leftHitbox.left = getWorldLocation().x;
+        leftHitbox.top = getWorldLocation().y + 0.1f;
         leftHitbox.right = leftHitbox.left;
-        leftHitbox.bottom = leftHitbox.top;
+        leftHitbox.bottom = getWorldLocation().y + getWorldLocation().height - 0.1f;
 
-        topHitbox.left = playerLocation.x + 0.175f;
-        topHitbox.top = playerLocation.y;
-        topHitbox.right = topHitbox.left;
+        topHitbox.left = getWorldLocation().x ;
+        topHitbox.top = getWorldLocation().y;
+        topHitbox.right = topHitbox.left + getWorldLocation().width;
         topHitbox.bottom = topHitbox.top;
 
-        rightHitbox.left = playerLocation.x + getWidth() - 0.05f;
-        rightHitbox.top = playerLocation.y + 0.15f;
+        rightHitbox.left = getWorldLocation().x + getWorldLocation().width;
+        rightHitbox.top = getWorldLocation().y + 0.1f;
         rightHitbox.right = rightHitbox.left;
-        rightHitbox.bottom = rightHitbox.top;
+        rightHitbox.bottom = getWorldLocation().y + getWorldLocation().height - 0.1f;
 
-        bottomHitbox.left = playerLocation.x + 0.175f;
-        bottomHitbox.top = playerLocation.y + getHeight() - 0.05f;
-        bottomHitbox.right = bottomHitbox.left;
+        bottomHitbox.left = getWorldLocation().x;
+        bottomHitbox.top = getWorldLocation().y + getWorldLocation().height;
+        bottomHitbox.right = bottomHitbox.left + getWorldLocation().width;
         bottomHitbox.bottom = bottomHitbox.top;
     }
 
-    public void checkForCollisions(GameObject gameObject) {
+    public void checkForCollisions(GameObject gameObject, boolean setHitbox) {
         count++;
         int collisionLocation = 0;
 
         RectF objectHitbox = gameObject.objectHitbox;
 
-        if(leftHitbox.intersect(objectHitbox)) {
+        if(leftHitbox.intersects(objectHitbox.left, objectHitbox.top, objectHitbox.right, objectHitbox.bottom)) {
             this.setWorldLocationX(objectHitbox.right);
 
             collisionLocation = X_AXIS;
@@ -123,7 +127,7 @@ public class Player extends GameObject {
             System.out.println("LEFT");
         }
 
-        if(topHitbox.intersect(objectHitbox)) {
+        if(topHitbox.intersects(objectHitbox.left, objectHitbox.top, objectHitbox.right, objectHitbox.bottom)) {
             this.setWorldLocationY(objectHitbox.bottom);
 
             collisionLocation = Y_AXIS;
@@ -132,18 +136,17 @@ public class Player extends GameObject {
             System.out.println("TOP");
         }
 
-        if(rightHitbox.intersect(objectHitbox)) {
+        if(rightHitbox.intersects(objectHitbox.left, objectHitbox.top, objectHitbox.right, objectHitbox.bottom)) {
             this.setWorldLocationX(objectHitbox.left - getWidth());
 
             collisionLocation = X_AXIS;
             handleCollisions(gameObject, collisionLocation);
 
             System.out.println("RIGHT");
-
         }
 
         // Feet
-        if(bottomHitbox.intersect(objectHitbox)) {
+        if(bottomHitbox.intersects(objectHitbox.left, objectHitbox.top, objectHitbox.right, objectHitbox.bottom)) {
             this.setWorldLocationY(objectHitbox.top - getHeight());
 
             collisionLocation = Y_AXIS;
@@ -160,6 +163,11 @@ public class Player extends GameObject {
         }
 
         handleCollisions(gameObject, collisionLocation);
+        setPlayerHitboxes();
+
+        if(setHitbox) {
+
+        }
     }
 
     private void handleCollisions(GameObject gameObject, int collisionLocation) {
@@ -185,8 +193,8 @@ public class Player extends GameObject {
                 break;
         }
         if(collided && gameObject.isDeadly()) {
-            this.setWorldLocationX(1);
-            this.setWorldLocationY(15);
+            this.setWorldLocationX(spawnLocation.x);
+            this.setWorldLocationY(spawnLocation.y);
         }
     }
 

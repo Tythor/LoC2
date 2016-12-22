@@ -11,11 +11,12 @@ import android.media.SoundPool;
 import java.io.IOException;
 
 public class SoundManager {
+    private Context context = GameView.context;
     private SoundPool soundPool;
 
     int sound = -1;
 
-    public void loadSound(Context context) {
+    public void loadSound() {
         soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
         try {
             AssetManager assetManager = context.getAssets();

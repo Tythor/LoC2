@@ -5,7 +5,7 @@ package com.tythor.loc2;
 import android.graphics.RectF;
 
 public class Viewport {
-    // Determine size of the viewport; Scale to 840 x 480
+    // Determine size of the viewport; Scale to 840 x 480 28 x 30
     public int METERSTOSHOWX = 28;
     public int METERSTOSHOWY = 30;
 
@@ -18,7 +18,8 @@ public class Viewport {
     public int screenCenterY;
 
     // Debugging
-    private int numberOfClippedObjects;
+    public int numberOfRenderedObjects;
+    public int numberOfObjects;
 
     Viewport(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
@@ -36,13 +37,13 @@ public class Viewport {
     }
 
     public RectF worldToScreen(WorldLocation worldLocation) {
-        float left = (screenCenterX - ((viewportLocation.x - worldLocation.x) * pixelsPerMeter));
+        float left = (screenCenterX - ((viewportLocation.x - worldLocation.x) * pixelsPerMeter / worldLocation.width));
 
-        float top = (screenCenterY - ((viewportLocation.y - worldLocation.y) * pixelsPerMeter));
+        float top = (screenCenterY - ((viewportLocation.y - worldLocation.y) * pixelsPerMeter / worldLocation.height));
 
-        float right = (left + worldLocation.width * pixelsPerMeter);
+        float right = (left + worldLocation.width * pixelsPerMeter / worldLocation.width);
 
-        float bottom = (top + worldLocation.height * pixelsPerMeter);
+        float bottom = (top + worldLocation.height * pixelsPerMeter / worldLocation.height);
 
         screenLocation.set(left, top, right, bottom);
 
@@ -52,21 +53,20 @@ public class Viewport {
     public boolean renderObject(WorldLocation worldLocation) {
         boolean rendered = false;
 
-        // Determine if the object is in the viewport
-        if(worldLocation.x - worldLocation.width < viewportLocation.x + METERSTOSHOWX / 2) {
-            if(worldLocation.x + worldLocation.width > viewportLocation.x - METERSTOSHOWX / 2) {
-                if(worldLocation.y - worldLocation.height < viewportLocation.y + METERSTOSHOWY / 2) {
-                    if(worldLocation.y + worldLocation.height > viewportLocation.y - METERSTOSHOWY / 2) {
-                        rendered = true;
-                    }
-                }
+        // Determine if the object is in the viewport by checking if left/right is within width and top/bottom is within height
+        if((worldToScreen(worldLocation).left > 0 && worldToScreen(worldLocation).left < screenWidth) || (worldToScreen(
+                worldLocation).right > 0 && worldToScreen(worldLocation).right < screenWidth)) {
+            if(worldToScreen(worldLocation).top > 0 && worldToScreen(worldLocation).top < screenHeight || (worldToScreen(
+                    worldLocation).bottom > 0 && worldToScreen(worldLocation).bottom < screenHeight)) {
+                rendered = true;
             }
         }
 
         // Debugging
-        if(!rendered) {
-            numberOfClippedObjects++;
+        if(rendered) {
+            numberOfRenderedObjects++;
         }
+        numberOfObjects++;
 
         return rendered;
     }
@@ -91,11 +91,12 @@ public class Viewport {
         return pixelsPerMeter;
     }
 
-    public int getNumberOfClippedObjects() {
-        return numberOfClippedObjects;
+    public int getNumberOfRenderedObjects() {
+        return numberOfRenderedObjects;
     }
 
     public void resetNumberOfClippedObjects() {
-        numberOfClippedObjects = 0;
+        numberOfRenderedObjects = 0;
+        numberOfObjects = 0;
     }
 }
