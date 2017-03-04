@@ -18,10 +18,10 @@ public class Animation {
     long startTime = System.currentTimeMillis();
 
     public Animation() {
-        playerLeft1 = levelManager.player.prepareBitmap("playerleft1");
-        playerLeft2 = levelManager.player.prepareBitmap("playerleft2");
-        playerRight1 = levelManager.player.prepareBitmap("playerright1");
-        playerRight2 = levelManager.player.prepareBitmap("playerright2");
+        playerLeft1 = levelManager.player.prepareBitmap("playerleft1", 1);
+        playerLeft2 = levelManager.player.prepareBitmap("playerleft2", 1);
+        playerRight1 = levelManager.player.prepareBitmap("playerright1", 1);
+        playerRight2 = levelManager.player.prepareBitmap("playerright2", 1);
     }
 
     public void animatePlayer(GameObject gameObject) {

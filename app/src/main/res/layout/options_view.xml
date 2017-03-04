@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.tythor.loc2.titleScreenUtils.MunroTextView
+        android:id="@+id/options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Options"
+        android:textSize="60dp" />
+
+    <RelativeLayout
+        android:id="@+id/optionsText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/options"
+        android:layout_marginTop="60dp"
+        android:gravity="center">
+
+        <RelativeLayout
+            android:id="@+id/blocksChangeColor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true">
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/blocksChangeColorText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:background="#80000000"
+                android:paddingLeft="10dp"
+                android:paddingRight="5dp"
+                android:text="Blocks change color"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.ChaiButton
+                android:id="@+id/blocksChangeColorButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="25dp"
+                android:layout_toRightOf="@id/blocksChangeColorText" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/showStatusBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/blocksChangeColor"
+            android:layout_below="@id/blocksChangeColor"
+            android:layout_marginTop="15dp">
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/showStatusBoxText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="5dp"
+                android:layout_centerVertical="true"
+                android:background="#80000000"
+                android:text="Show status box"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.ChaiButton
+                android:id="@+id/showStatusBoxButtonFake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/showStatusBoxText"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <com.tythor.loc2.titleScreenUtils.ChaiButton
+            android:id="@+id/showStatusBoxButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/blocksChangeColor"
+            android:layout_alignTop="@id/showStatusBox"
+            android:layout_centerVertical="true" />
+
+        <RelativeLayout
+            android:id="@+id/playRandomMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/blocksChangeColor"
+            android:layout_below="@id/showStatusBox"
+            android:layout_marginTop="15dp">
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/playRandomMusicText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="10dp"
+                android:paddingRight="5dp"
+                android:background="#80000000"
+                android:text="Play random music"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.ChaiButton
+                android:id="@+id/playRandomMusicButtonFake"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:layout_toRightOf="@id/playRandomMusicText"
+                android:visibility="invisible" />
+
+        </RelativeLayout>
+
+        <com.tythor.loc2.titleScreenUtils.ChaiButton
+            android:id="@+id/playRandomMusicButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/blocksChangeColor"
+            android:layout_alignTop="@id/playRandomMusic"
+            android:layout_centerVertical="true" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|right">
+
+        <com.tythor.loc2.titleScreenUtils.BackTextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="back"
+            android:paddingBottom="6dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="6dp"
+            android:paddingTop="30dp"
+            android:text="Back"
+            android:textSize="36dp" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

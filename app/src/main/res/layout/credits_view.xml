@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/credits"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:text="Credits"
+                android:textSize="60dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroSmallTextView
+                android:id="@+id/developedBy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/credits"
+                android:layout_marginTop="35dp"
+                android:text="DEVELOPED BY"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/thomasPatierno"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/developedBy"
+                android:layout_marginTop="15dp"
+                android:text="THOMAS PATIERNO"
+                android:textSize="60dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroSmallTextView
+                android:id="@+id/portedBy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/thomasPatierno"
+                android:layout_marginTop="35dp"
+                android:text="PORTED BY"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/tylerThorin"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/portedBy"
+                android:layout_marginTop="15dp"
+                android:text="TYLER THORIN"
+                android:textSize="60dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroSmallTextView
+                android:id="@+id/testers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/tylerThorin"
+                android:layout_marginTop="40dp"
+                android:text="TESTERS"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/david"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/testers"
+                android:layout_marginTop="12.5dp">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/davidText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="David"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/josh"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/david">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/joshText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Josh"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/trevor"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/josh">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/trevorText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Trevor"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/claire"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/trevor">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/claireText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Claire"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/james"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/claire">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/jamesText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="James"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/johnathan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/james">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/johnathanText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Johnathan"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/michael"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/johnathan">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/michaelText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Michael"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/tj"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/michael">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/tjText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="TJ"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/dylan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/tj">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/dylanText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Dylan"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/joel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/dylan">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/joelText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Joel"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/joey"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/joel">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/joeyText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Joey"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/kyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/joey">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/kyleText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Kyle"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/le"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/kyle">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/leText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Le"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/ryan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/le">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/ryanText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Ryan"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/therese"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/ryan">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/thereseText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Therese"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.NamesRelativeLayout
+                android:id="@+id/tyler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/therese">
+
+                <com.tythor.loc2.titleScreenUtils.NamesTextView
+                    android:id="@+id/tylerText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="2.5dp"
+                    android:layout_marginTop="2.5dp"
+                    android:text="Tyler"
+                    android:textSize="24dp" />
+
+            </com.tythor.loc2.titleScreenUtils.NamesRelativeLayout>
+
+            <com.tythor.loc2.titleScreenUtils.MunroSmallTextView
+                android:id="@+id/fontsFromTenByTwenty.com"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/tyler"
+                android:layout_marginTop="40dp"
+                android:text="FONTS FROM TENBYTWENTY.COM"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroSmallTextView
+                android:id="@+id/inspiredBy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/fontsFromTenByTwenty.com"
+                android:layout_marginTop="40dp"
+                android:text="INSPIRED BY"
+                android:textSize="36dp" />
+
+            <com.tythor.loc2.titleScreenUtils.MunroTextView
+                android:id="@+id/IWannaBeTheGuy"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/inspiredBy"
+                android:layout_marginTop="15dp"
+                android:text="I WANNA BE THE GUY"
+                android:textSize="48dp" />
+
+            <ImageView
+                android:id="@+id/chai"
+                android:layout_width="183dp"
+                android:layout_height="183dp"
+                android:layout_below="@id/IWannaBeTheGuy"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="-25dp"
+                android:adjustViewBounds="true"
+                android:foregroundGravity="center"
+                android:onClick="playTitleLevel"
+                android:paddingTop="251.625dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/playerleft1" />
+
+        </RelativeLayout>
+    </ScrollView>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|right">
+
+        <com.tythor.loc2.titleScreenUtils.BackTextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="back"
+            android:paddingBottom="6dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="6dp"
+            android:paddingTop="30dp"
+            android:text="Back"
+            android:textSize="36dp" />
+
+    </RelativeLayout>
+</FrameLayout>

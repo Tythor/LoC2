@@ -9,7 +9,6 @@ import android.graphics.RectF;
 
 public abstract class GameObject {
     private Context context = GameView.context;
-    private int pixelsPerMeter = GameView.viewport.pixelsPerMeter;
 
     // Facing
     final int LEFT = 1;
@@ -27,6 +26,8 @@ public abstract class GameObject {
     private boolean movable = false;
     private boolean deadly = false;
     public RectF objectHitbox = new RectF();
+    public boolean checkLeftBounds = false;
+    public boolean checkRightBounds = false;
 
     // Force the gameObjects to update themselves
     public abstract void update(long fps);
@@ -52,7 +53,7 @@ public abstract class GameObject {
     }
 
     // Label, fetch, scale, then return the bitmap
-    public Bitmap prepareBitmap(String bitmapName) {
+    public Bitmap prepareBitmap(String bitmapName, float scaleFactor) {
         long timeStart = System.currentTimeMillis();
 
         // Label the bitmap
@@ -65,7 +66,7 @@ public abstract class GameObject {
         options.inPreferredConfig = Bitmap.Config.RGB_565;
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeResource(context.getResources(), resID, options);
-        options.inSampleSize = calculateInSampleSize(options, (int) (worldLocation.width * pixelsPerMeter), (int) (worldLocation.height * pixelsPerMeter));
+        options.inSampleSize = calculateInSampleSize(options, (int) (worldLocation.width * Viewport.pixelsPerMeter * scaleFactor), (int) (worldLocation.height * Viewport.pixelsPerMeter * scaleFactor));
         options.inJustDecodeBounds = false;
 
         // Fetch the bitmap
@@ -73,12 +74,31 @@ public abstract class GameObject {
 
         // Scale the bitmap; divided by block size
         bitmap = Bitmap.createScaledBitmap(bitmap,
-                                           (int) (worldLocation.width * pixelsPerMeter / 20),
-                                           (int) (worldLocation.height * pixelsPerMeter / 20),
+                                           (int) (worldLocation.width * Viewport.pixelsPerMeter * scaleFactor),
+                                           (int) (worldLocation.height * Viewport.pixelsPerMeter * scaleFactor),
                                            false);
+        System.out.println((worldLocation.width * Viewport.pixelsPerMeter * scaleFactor));
+        System.out.println((worldLocation.height * Viewport.pixelsPerMeter * scaleFactor));
 
         System.out.println(bitmap.getWidth() + " x " + bitmap.getHeight());
         System.out.println((System.currentTimeMillis() - timeStart) / 1000.0 + "s");
+        /*if(bitmapName.equals("playerleft1")) {
+            System.out.println("resetPlayer");
+            // Scale the bitmap; divided by block size
+            int width = (int) (8 * Viewport.pixelsPerMeter * scaleFactor);
+            int difference = width % 8;
+            if(difference <= 4 && difference != 0)
+                width -= difference;
+            else
+                width += 8 - difference;
+            System.out.println(difference + "I AM THE DIFFERENCE");
+            System.out.println(width + "I AM THE WIDTH");
+            bitmap = Bitmap.createScaledBitmap(bitmap,
+                                               width,
+                                               (int) (width * 1.375),
+                                               false);
+            System.out.println(bitmap.getWidth() + " x " + bitmap.getHeight() + "\n\n\n\n\n");
+        }*/
 
         return bitmap;
     }
@@ -90,8 +110,8 @@ public abstract class GameObject {
 
         objectHitbox.left = worldLocation.x;
         objectHitbox.top = worldLocation.y;
-        objectHitbox.right = worldLocation.x + 1;
-        objectHitbox.bottom = worldLocation.y + 1;
+        objectHitbox.right = worldLocation.x + worldLocation.width;
+        objectHitbox.bottom = worldLocation.y + worldLocation.height;
     }
 
     public void setupGameObject(String blockType, String bitmapName, WorldLocation worldLocation, int facing, boolean movable, boolean active, boolean visible) {

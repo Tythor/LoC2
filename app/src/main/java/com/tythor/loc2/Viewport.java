@@ -6,12 +6,12 @@ import android.graphics.RectF;
 
 public class Viewport {
     // Determine size of the viewport; Scale to 840 x 480 28 x 30
-    public int METERSTOSHOWX = 28;
+    public int METERSTOSHOWX = 568;
     public int METERSTOSHOWY = 30;
 
     private WorldLocation viewportLocation;
     private RectF screenLocation;
-    public int pixelsPerMeter;
+    public static float pixelsPerMeter;
     private int screenWidth;
     private int screenHeight;
     public int screenCenterX;
@@ -29,7 +29,9 @@ public class Viewport {
         screenCenterX = screenWidth / 2;
         screenCenterY = screenHeight / 2;
 
-        pixelsPerMeter = screenWidth / (METERSTOSHOWX);
+        pixelsPerMeter = (float) screenWidth / METERSTOSHOWX;
+        // Round pixelsPerMeter to the first decimal place
+        pixelsPerMeter = Math.round(pixelsPerMeter * 10f) / 10f;
         System.out.println(screenWidth + "/" + (METERSTOSHOWX));
 
         screenLocation = new RectF();
@@ -37,13 +39,13 @@ public class Viewport {
     }
 
     public RectF worldToScreen(WorldLocation worldLocation) {
-        float left = (screenCenterX - ((viewportLocation.x - worldLocation.x) * pixelsPerMeter / worldLocation.width));
+        float left = (screenCenterX - ((viewportLocation.x - worldLocation.x) * pixelsPerMeter));
 
-        float top = (screenCenterY - ((viewportLocation.y - worldLocation.y) * pixelsPerMeter / worldLocation.height));
+        float top = (screenCenterY - ((viewportLocation.y - worldLocation.y) * pixelsPerMeter));
 
-        float right = (left + worldLocation.width * pixelsPerMeter / worldLocation.width);
+        float right = (left + (worldLocation.width) * pixelsPerMeter);
 
-        float bottom = (top + worldLocation.height * pixelsPerMeter / worldLocation.height);
+        float bottom = (top + (worldLocation.height) * pixelsPerMeter);
 
         screenLocation.set(left, top, right, bottom);
 
@@ -87,7 +89,7 @@ public class Viewport {
         return screenHeight;
     }
 
-    public int getPixelsPerMeter() {
+    public float getPixelsPerMeter() {
         return pixelsPerMeter;
     }
 

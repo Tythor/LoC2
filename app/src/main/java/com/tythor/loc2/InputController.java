@@ -5,36 +5,41 @@ package com.tythor.loc2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
+import android.graphics.RectF;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
+
+import static com.tythor.loc2.GameActivity.context;
+import static com.tythor.loc2.GameActivity.screenHeight;
+import static com.tythor.loc2.GameActivity.screenWidth;
 
 public class InputController {
     Context context = GameView.context;
     LevelManager levelManager = GameView.levelManager;
     Viewport viewport = GameView.viewport;
-    int pixelsPerMeter = GameView.viewport.pixelsPerMeter;
+    float pixelsPerMeter = GameView.viewport.pixelsPerMeter;
 
-    Rect left;
-    Rect right;
-    Rect up;
-    Rect zoomIn;
-    Rect zoomOut;
-    Rect increaseGravity;
-    Rect deccreaseGravity;
-    Rect toggleBitmaps;
-    Rect resetLocation;
-    Rect pauseButton;
+    RectF left;
+    RectF right;
+    RectF up;
+    RectF zoomIn;
+    RectF zoomOut;
+    RectF increaseGravity;
+    RectF deccreaseGravity;
+    RectF toggleBitmaps;
+    RectF resetLocation;
+    RectF pauseButton;
 
     Bitmap bitmapLeft;
     Bitmap bitmapRight;
     Bitmap bitmapUp;
     Bitmap bitmapPauseButton;
 
-    Rect leftArea;
-    Rect rightArea;
-    Rect upArea;
+    RectF pauseArea;
+    RectF leftArea;
+    RectF rightArea;
+    RectF upArea;
 
     boolean bitmapsOn = true;
 
@@ -43,65 +48,66 @@ public class InputController {
         int screenHeight = viewport.getScreenHeight();
 
         // Buttons are 3 x 3
-        int buttonWidth = pixelsPerMeter * 3;
-        int buttonHeight = pixelsPerMeter * 3;
-        int buttonPadding = pixelsPerMeter / 2;
+        float buttonWidth = pixelsPerMeter * 60;
+        float buttonHeight = pixelsPerMeter * 60;
+        float buttonPadding = pixelsPerMeter * 2;
 
-        left = new Rect(buttonPadding,
+        left = new RectF(buttonPadding,
                         screenHeight - buttonHeight - buttonPadding,
                         buttonPadding + buttonWidth,
                         screenHeight - buttonPadding);
         bitmapLeft = prepareBitmap("arrowleft");
 
-        right = new Rect(buttonWidth + buttonPadding * 3,
+        right = new RectF(buttonWidth + buttonPadding * 3,
                          screenHeight - buttonHeight - buttonPadding,
                          buttonWidth * 2 + buttonPadding * 3,
                          screenHeight - buttonPadding);
         bitmapRight = prepareBitmap("arrowright");
 
-        up = new Rect(screenWidth - buttonWidth - buttonPadding,
+        up = new RectF(screenWidth - buttonWidth - buttonPadding,
                       screenHeight - buttonHeight - buttonPadding,
                       screenWidth - buttonPadding,
                       screenHeight - buttonPadding);
         bitmapUp = prepareBitmap("arrowup");
 
-        zoomIn = new Rect(screenWidth - buttonPadding - buttonWidth,
+        zoomIn = new RectF(screenWidth - buttonPadding - buttonWidth,
                           buttonPadding,
                           screenWidth - buttonPadding,
                           buttonPadding + buttonHeight);
 
-        zoomOut = new Rect(screenWidth - buttonWidth * 2 - buttonPadding * 2,
+        zoomOut = new RectF(screenWidth - buttonWidth * 2 - buttonPadding * 2,
                            zoomIn.top,
                            screenWidth - buttonWidth - buttonPadding * 2,
                            zoomIn.bottom);
 
-        increaseGravity = new Rect(zoomIn.left,
+        increaseGravity = new RectF(zoomIn.left,
                                    buttonPadding * 2 + buttonHeight,
                                    zoomIn.right,
                                    buttonPadding * 2 + buttonHeight * 2);
 
-        deccreaseGravity = new Rect(zoomOut.left,
+        deccreaseGravity = new RectF(zoomOut.left,
                                     increaseGravity.top,
                                     zoomOut.right,
                                     increaseGravity.bottom);
 
-        resetLocation = new Rect(buttonPadding * 2 + buttonWidth,
+        resetLocation = new RectF(buttonPadding * 2 + buttonWidth,
                 zoomIn.top,
                 buttonPadding * 2 + buttonWidth * 2,
                 zoomIn.bottom);
 
-        toggleBitmaps = new Rect(resetLocation.right + buttonPadding,
+        toggleBitmaps = new RectF(resetLocation.right + buttonPadding,
                 resetLocation.top,
                 resetLocation.right + buttonPadding + buttonWidth,
                 resetLocation.bottom);
 
-        pauseButton = new Rect((int) (buttonWidth / 7.5), (int) (buttonHeight / 7.5), (int) (buttonWidth / 2.5), (int) (buttonHeight / 2.5));
-        System.out.println(pauseButton.width() + ", " + pauseButton.height());
+        pauseButton = new RectF((int) (buttonWidth / 7.5), (int) (buttonHeight / 7.5), (int) (buttonWidth / 7.5) + (int) ((pixelsPerMeter * 60) / 1.875), (int) (buttonWidth / 7.5) + (int) ((pixelsPerMeter * 60) / 1.875));
+        System.out.println(pauseButton);
         bitmapPauseButton = prepareBitmap("pausebutton");
+        pauseArea = new RectF(0, 0, pauseButton.left + bitmapPauseButton.getWidth(), pauseButton.top + bitmapPauseButton.getHeight());
 
-        leftArea = new Rect(0, 0, left.right + pixelsPerMeter / 2, screenHeight);
-        rightArea = new Rect(right.left - pixelsPerMeter / 2, 0, right.right, screenHeight);
-        upArea = new Rect(up.left, 0, screenWidth, screenHeight);
+        leftArea = new RectF(0, 0, left.right + pixelsPerMeter / 2, screenHeight);
+        rightArea = new RectF(right.left - pixelsPerMeter / 2, 0, right.right, screenHeight);
+        upArea = new RectF(up.left, 0, screenWidth, screenHeight);
     }
 
     private Bitmap prepareBitmap(String bitmapName) {
@@ -116,12 +122,12 @@ public class InputController {
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID, options);
 
         bitmap = Bitmap.createScaledBitmap(bitmap,
-                                           3 * pixelsPerMeter,
-                                           3 * pixelsPerMeter,
+                                           (int) (60 * pixelsPerMeter),
+                                           (int) (60 * pixelsPerMeter),
                                            false);
 
         if(bitmapName.equals("pausebutton")) {
-            bitmap = Bitmap.createScaledBitmap(bitmap, (int) ((pixelsPerMeter * 3) / 1.875), (int) ((pixelsPerMeter * 3) / 1.875), false);
+            bitmap = Bitmap.createScaledBitmap(bitmap, (int) ((pixelsPerMeter * 60) / 1.875), (int) ((pixelsPerMeter * 60) / 1.875), false);
         }
         return bitmap;
     }
@@ -134,7 +140,7 @@ public class InputController {
             int y = (int) motionEvent.getY(i);
 
             // Extend the controls' touch area
-            if(leftArea.contains(x, y)) {
+            if(leftArea.contains(x, y) && !pauseArea.contains(x, y)) {
                 levelManager.player.setPressingLeft(true);
                 levelManager.player.setPressingRight(false);
             }
@@ -152,19 +158,18 @@ public class InputController {
             }
 
             switch(motionEvent.getActionMasked() & MotionEvent.ACTION_MASK) {
-
                 case MotionEvent.ACTION_DOWN:
                     if(zoomIn.contains(x, y)) {
-                        if(viewport.METERSTOSHOWY % 2 == 0) {
-                            viewport.METERSTOSHOWX /= 2;
-                            viewport.METERSTOSHOWY /= 2;
-                            viewport.pixelsPerMeter = viewport.getScreenWidth() / (viewport.METERSTOSHOWX - 2);
-                        }
+                        viewport.METERSTOSHOWX /= 2;
+                        viewport.METERSTOSHOWY /= 2;
+                        viewport.pixelsPerMeter /= 2;
+                        levelManager.refreshBitmaps();
                     }
                     else if(zoomOut.contains(x, y)) {
                         viewport.METERSTOSHOWX *= 2;
                         viewport.METERSTOSHOWY *= 2;
-                        viewport.pixelsPerMeter = viewport.getScreenWidth() / (viewport.METERSTOSHOWX - 2);
+                        viewport.pixelsPerMeter *= 2;
+                        levelManager.refreshBitmaps();
 
                     }
                     else if(increaseGravity.contains(x, y)) {
@@ -179,6 +184,10 @@ public class InputController {
                     else if(resetLocation.contains(x, y)) {
                         levelManager.player.setWorldLocationX(levelManager.player.spawnLocation.x);
                         levelManager.player.setWorldLocationY(levelManager.player.spawnLocation.y);
+                    }
+                    else if(pauseArea.contains(x, y)) {
+                        ViewController.currentView = new TitleView(context, ViewController.paint, ViewController.canvas, screenWidth, screenHeight);
+                        System.out.println("TOUCHED PAUSE");
                     }
                     break;
 
@@ -217,8 +226,8 @@ public class InputController {
         }
     }
 
-    public ArrayList<Rect> getButtonList() {
-        ArrayList<Rect> buttonList = new ArrayList<>();
+    public ArrayList<RectF> getButtonList() {
+        ArrayList<RectF> buttonList = new ArrayList<>();
 
         buttonList.add(left);
         buttonList.add(right);

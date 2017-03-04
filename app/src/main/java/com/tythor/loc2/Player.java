@@ -11,12 +11,11 @@ public class Player extends GameObject {
     final int Y_AXIS = 2;
     // In milliseconds
     final long maxJumpTime = 1000;
-    float upGravity = 10f; // 10.6f
+    float upGravity = 100f; // 10.6f
     float downGravity;
     boolean pressingRight = false;
     boolean pressingLeft = false;
-    WorldLocation playerLocation;
-    WorldLocation spawnLocation;
+    final WorldLocation spawnLocation;
     RectF leftHitbox;
     RectF topHitbox;
     RectF rightHitbox;
@@ -30,12 +29,12 @@ public class Player extends GameObject {
     float addedGravity;
 
     Player(WorldLocation playerLocation) {
-
         // Players are 0.40 x 0.55
         final float WIDTH = 8;
         final float HEIGHT = 11;
 
-        spawnLocation = playerLocation;
+        spawnLocation = new WorldLocation(playerLocation.x, playerLocation.y);
+
         playerLocation.z = 2;
         playerLocation.width = WIDTH;
         playerLocation.height = HEIGHT;
@@ -65,7 +64,7 @@ public class Player extends GameObject {
         }
 
         // Update player's Y location
-        if(jumping) {
+        /*if(jumping) {
             long timeJumping = System.currentTimeMillis() - timeOfJump;
             if(Math.abs(getWorldLocation().y - locationOfJump) < 3.5) {
                 setYVelocity(-(upGravity + addedGravity));
@@ -77,39 +76,30 @@ public class Player extends GameObject {
                 addedGravity = 0;
                 jumping = false;
             }
-            addedGravity += 0.116f;
+            addedGravity += 10f;
+        }
+        else {
+            setYVelocity(upGravity);
+        }*/
+        if(jumping) {
+            long timeJumping = System.currentTimeMillis() - timeOfJump;
+            if(Math.abs(getWorldLocation().y - locationOfJump) < 70) {
+                setYVelocity(-(upGravity + addedGravity));
+            }
+            else {
+                setYVelocity(upGravity);
+                System.out.println("capped");
+                System.out.println(addedGravity + " " + timeJumping / 1000.00);
+                addedGravity = 0;
+                jumping = false;
+            }
+            addedGravity += 10f;
         }
         else {
             setYVelocity(upGravity);
         }
 
         move(fps);
-    }
-
-    public void setPlayerHitboxes() {
-        // Get player's location
-        playerLocation = getWorldLocation();
-
-        // Set hitboxes
-        leftHitbox.left = getWorldLocation().x;
-        leftHitbox.top = getWorldLocation().y + 0.1f;
-        leftHitbox.right = leftHitbox.left;
-        leftHitbox.bottom = getWorldLocation().y + getWorldLocation().height - 0.1f;
-
-        topHitbox.left = getWorldLocation().x ;
-        topHitbox.top = getWorldLocation().y;
-        topHitbox.right = topHitbox.left + getWorldLocation().width;
-        topHitbox.bottom = topHitbox.top;
-
-        rightHitbox.left = getWorldLocation().x + getWorldLocation().width;
-        rightHitbox.top = getWorldLocation().y + 0.1f;
-        rightHitbox.right = rightHitbox.left;
-        rightHitbox.bottom = getWorldLocation().y + getWorldLocation().height - 0.1f;
-
-        bottomHitbox.left = getWorldLocation().x;
-        bottomHitbox.top = getWorldLocation().y + getWorldLocation().height;
-        bottomHitbox.right = bottomHitbox.left + getWorldLocation().width;
-        bottomHitbox.bottom = bottomHitbox.top;
     }
 
     public void checkForCollisions(GameObject gameObject, boolean setHitbox) {
@@ -163,7 +153,7 @@ public class Player extends GameObject {
         }
 
         handleCollisions(gameObject, collisionLocation);
-        setPlayerHitboxes();
+        //setPlayerHitboxes();
 
         if(setHitbox) {
 

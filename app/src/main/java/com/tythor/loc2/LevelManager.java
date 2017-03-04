@@ -5,6 +5,7 @@ package com.tythor.loc2;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 
 import java.io.BufferedReader;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 
 public class LevelManager {
     Context context = GameView.context;
+
+    final int TOTALBITMAPS = 25;
 
     Player player;
     // ArrayList<GameObject> gameObjects;
@@ -27,6 +30,7 @@ public class LevelManager {
 
     boolean blocksExist = false;
     boolean spikesExist = false;
+    Point point;
 
     LevelManager(String levelName) {
         this.levelName = levelName;
@@ -36,11 +40,6 @@ public class LevelManager {
 
         WorldLocation spawnLocation = parseLevel(levelName);
 
-        // gameObjects = new ArrayList<>();
-
-        // All the bitmaps
-        // 0 is nothing; 1, 2 are player; 3-9 are block colors; 10-13 are spike directions
-        final int TOTALBITMAPS = 25;
         bitmapArray = new Bitmap[TOTALBITMAPS];
 
         // Load all GameObjects and Bitmaps
@@ -68,6 +67,7 @@ public class LevelManager {
                     String[] spawn = line.split(", ");
                     spawnLocation = new WorldLocation(Integer.parseInt(spawn[1]), Integer.parseInt(spawn[2]));
                     System.out.println(Integer.parseInt(spawn[1]) + " spawn " + Integer.parseInt(spawn[2]));
+                    point = new Point(Integer.parseInt(spawn[1]), Integer.parseInt(spawn[2]));
                 }
 
                 if(areBlocks) {
@@ -126,19 +126,18 @@ public class LevelManager {
             }
         }
 
-        boolean found = false;
+        boolean set = false;
 
         for(int i = 0; i < gameObjects.length; i++) {
             for(int j = 0; j < gameObjects[0].length; j++) {
                 if(gameObjects[i][j] == null) {
                     gameObjects[i][j] = player;
-                    found = true;
+                    set = true;
                     break;
                 }
             }
-            if(found) {
+            if(set)
                 break;
-            }
         }
 
         String blockType;
@@ -153,7 +152,30 @@ public class LevelManager {
                     if(bitmapArray[getBitmapIndex(blockType)] == null) {
                         // Add block's bitmap to bitmapArray
                         bitmapArray[getBitmapIndex(blockType)] = gameObjects[i][j].prepareBitmap(
-                                gameObjects[i][j].getBitmapName());
+                                gameObjects[i][j].getBitmapName(), 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public void refreshBitmaps() {
+        String blockType;
+        Bitmap[] mockBitmapArray = new Bitmap[TOTALBITMAPS];
+
+        // Add blocks from levelData
+        for(int i = 0; i < gameObjects.length; i++) {
+            for(int j = 0; j < gameObjects[i].length; j++) {
+                if(gameObjects[i][j] != null) {
+                    blockType = gameObjects[i][j].getBlockType();
+
+                    // Check if bitmap has already been prepared
+                    if(mockBitmapArray[getBitmapIndex(blockType)] == null) {
+                        // Add block's bitmap to bitmapArray
+                        bitmapArray[getBitmapIndex(blockType)] = gameObjects[i][j].prepareBitmap(
+                                gameObjects[i][j].getBitmapName(), 1);
+
+                        mockBitmapArray[getBitmapIndex(blockType)] = bitmapArray[getBitmapIndex(blockType)];
                     }
                 }
             }
