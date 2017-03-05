@@ -49,7 +49,7 @@ public class Player extends GameObject {
     }
 
     @Override
-    public void update(long fps) {
+    public void update(int FPS) {
         // Update player's X location and direction
         if(pressingRight) {
             setXVelocity(X_VELOCITY);
@@ -99,7 +99,7 @@ public class Player extends GameObject {
             setYVelocity(upGravity);
         }
 
-        move(fps);
+        move(FPS);
     }
 
     public void checkForCollisions(GameObject gameObject, boolean setHitbox) {

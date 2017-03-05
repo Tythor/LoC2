@@ -25,7 +25,7 @@ public class ViewController extends SurfaceView implements Runnable {
 
     // For FPS calculation
     private long frameStartTime;
-    public static long FPS = 60;
+    public static int FPS = 60;
 
     private int screenWidth;
     private int screenHeight;
@@ -52,7 +52,7 @@ public class ViewController extends SurfaceView implements Runnable {
                 currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
                 break;
             case "gameView":
-                currentView = new GameView(context, paint, canvas, screenWidth, screenHeight, "HABIPPOLevel");
+                currentView = new GameView(context, paint, canvas, screenWidth, screenHeight, "Level1-3");
                 break;
         }
     }
@@ -72,7 +72,7 @@ public class ViewController extends SurfaceView implements Runnable {
             // Calculate time taken with update() and draw()
             long differenceBetweenFrames = System.currentTimeMillis() - frameStartTime;
             if(differenceBetweenFrames >= 1) {
-                FPS = 1000 / differenceBetweenFrames;
+                FPS = (int) (1000 / differenceBetweenFrames);
             }
         }
     }

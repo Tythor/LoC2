@@ -30,7 +30,7 @@ public abstract class GameObject {
     public boolean checkRightBounds = false;
 
     // Force the gameObjects to update themselves
-    public abstract void update(long fps);
+    public abstract void update(int FPS);
 
     // Bitmap optimization
     private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -125,9 +125,24 @@ public abstract class GameObject {
     }
 
     // Update GameObject's location
-    public void move(long fps) {
-        worldLocation.x += xVelocity / fps;
-        worldLocation.y += yVelocity / fps;
+    public void move(int FPS) {
+        worldLocation.x += xVelocity / FPS;
+        worldLocation.y += yVelocity / FPS;
+    }
+
+    public void moveTo(int FPS, WorldLocation moveToLocation) {
+        float xDestination = xVelocity / FPS;
+        float yDestination = yVelocity / FPS;
+
+        // If xDestination is over moveToLocation, then jump to moveToLocation
+        if(xDestination > 0 && worldLocation.x + xDestination > moveToLocation.x || xDestination < 0 && worldLocation.x + xDestination < moveToLocation.x)
+            worldLocation.x = moveToLocation.x;
+        else
+            worldLocation.x += xDestination;
+        if(yDestination > 0 && worldLocation.y + yDestination > moveToLocation.y || yDestination < 0 && worldLocation.y + yDestination < moveToLocation.y)
+            worldLocation.y = moveToLocation.y;
+        else
+            worldLocation.y += yDestination;
     }
 
     public WorldLocation getWorldLocation() {
@@ -183,9 +198,7 @@ public abstract class GameObject {
     }
 
     public void setXVelocity(float xVelocity) {
-        if(movable) {
-            this.xVelocity = xVelocity;
-        }
+        this.xVelocity = xVelocity;
     }
 
     public float getYVelocity() {
@@ -193,9 +206,7 @@ public abstract class GameObject {
     }
 
     public void setYVelocity(float yVelocity) {
-        if(movable) {
-            this.yVelocity = yVelocity;
-        }
+        this.yVelocity = yVelocity;
     }
 
     public boolean isMovable() {

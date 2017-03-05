@@ -53,7 +53,7 @@ public class Block extends GameObject {
 
     int count;
     @Override
-    public void update(long fps) {
+    public void update(int FPS) {
         count++;
         // Check for collision
         /*setPlayerHitboxes();
@@ -115,7 +115,6 @@ public class Block extends GameObject {
             levelManager.player.jumping = false;
             levelManager.player.addedGravity = 0;
         }
-
     }
 
     public void setObjectHitboxes() {

@@ -110,10 +110,13 @@ public class LevelManager {
 
         if(spikesExist) {
             for(int i = 0; i < spikes.size(); i++) {
-                String[] line = spikes.get(i).split(", ");
-                String[] index = line[0].split("; ");
+                String[] line = spikes.get(i).split("\\| ");
+                boolean hasInstructions = false;
+                String[] index = line[0].split(", ")[0].split("; ");
+                if(line.length > 1)
+                    hasInstructions = true;
                 gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getSpikeType(
-                        line);
+                        line, hasInstructions);
             }
         }
 
@@ -157,6 +160,67 @@ public class LevelManager {
                 }
             }
         }
+    }
+
+    private GameObject getBlockType(String[] line) {
+        // Dummy block
+        Block block = new Block(0, 0, " ");
+
+        String[] sLocation = line[1].split("; ");
+        Float[] location = {Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])};
+
+        String[] blockTypes = {"B", "G", "O", "Pi", "Pu", "R"};
+
+        for(int i = 0; i < blockTypes.length; i++) {
+            if(line[2].contains(blockTypes[i])) {
+                block = new Block(location[0], location[1], blockTypes[i]);
+            }
+        }
+
+        return block;
+    }
+
+    private GameObject getSpikeType(String[] line, boolean hasInstructions) {
+        // Dummy spike
+        Spike spike = new Spike(0, 0, " ");
+
+        String[] info = line[0].split(", ");
+
+        String[] sLocation = info[1].split("; ");
+        Float[] location = {Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])};
+
+        String[] spikeTypes = {"1", "2", "3", "4"};
+
+        for(int i = 0; i < spikeTypes.length; i++) {
+            if(info[2].contains(spikeTypes[i])) {
+                spike = new Spike(location[0], location[1], spikeTypes[i]);
+            }
+        }
+
+        String instructionsLine = "";
+        if(hasInstructions) {
+            instructionsLine = line[1];
+            spike.setHasInstructions(true);
+            System.out.println(instructionsLine);
+        }
+
+        String[] instructions = instructionsLine.split(", ");
+        if(instructions[0].equals("move")) {
+            spike.setHasMovementInstructions(true);
+
+            spike.setMoveSpeed(Float.parseFloat(instructions[1]));
+            sLocation = instructions[2].split("; ");
+            spike.setMoveToLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
+
+            sLocation = instructions[4].split("; ");
+            spike.setTriggerLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
+
+            spike.setBoundLocation(new WorldLocation(spike.getTriggerLocation().x + Float.parseFloat(sLocation[2]), spike.getTriggerLocation().y + Float.parseFloat(sLocation[3])));
+
+            spike.applyInstructions();
+        }
+
+        return spike;
     }
 
     public void refreshBitmaps() {
@@ -236,46 +300,6 @@ public class LevelManager {
         }
 
         return index;
-    }
-
-    private GameObject getBlockType(String[] line) {
-        // Dummy block
-        Block block = new Block(0, 0, " ");
-
-        String[] sLocation = line[1].split("; ");
-        Float[] location = new Float[2];
-        location[0] = Float.parseFloat(sLocation[0]);
-        location[1] = Float.parseFloat(sLocation[1]);
-
-        String[] blockTypes = {"B", "G", "O", "Pi", "Pu", "R"};
-
-        for(int i = 0; i < blockTypes.length; i++) {
-            if(line[2].contains(blockTypes[i])) {
-                block = new Block(location[0], location[1], blockTypes[i]);
-            }
-        }
-
-        return block;
-    }
-
-    private GameObject getSpikeType(String[] line) {
-        // Dummy spike
-        Spike spike = new Spike(0, 0, " ");
-
-        String[] sLocation = line[1].split("; ");
-        Float[] location = new Float[2];
-        location[0] = Float.parseFloat(sLocation[0]);
-        location[1] = Float.parseFloat(sLocation[1]);
-
-        String[] spikeTypes = {"1", "2", "3", "4"};
-
-        for(int i = 0; i < spikeTypes.length; i++) {
-            if(line[2].contains(spikeTypes[i])) {
-                spike = new Spike(location[0], location[1], spikeTypes[i]);
-            }
-        }
-
-        return spike;
     }
 
     public Bitmap getBitmap(String blockType) {
