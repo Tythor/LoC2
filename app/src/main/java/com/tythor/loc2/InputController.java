@@ -10,10 +10,6 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-import static com.tythor.loc2.GameActivity.context;
-import static com.tythor.loc2.GameActivity.screenHeight;
-import static com.tythor.loc2.GameActivity.screenWidth;
-
 public class InputController {
     Context context = GameView.context;
     LevelManager levelManager = GameView.levelManager;
@@ -160,17 +156,16 @@ public class InputController {
             switch(motionEvent.getActionMasked() & MotionEvent.ACTION_MASK) {
                 case MotionEvent.ACTION_DOWN:
                     if(zoomIn.contains(x, y)) {
-                        viewport.METERSTOSHOWX /= 2;
-                        viewport.METERSTOSHOWY /= 2;
-                        viewport.pixelsPerMeter /= 2;
-                        levelManager.refreshBitmaps();
-                    }
-                    else if(zoomOut.contains(x, y)) {
                         viewport.METERSTOSHOWX *= 2;
                         viewport.METERSTOSHOWY *= 2;
                         viewport.pixelsPerMeter *= 2;
                         levelManager.refreshBitmaps();
-
+                    }
+                    else if(zoomOut.contains(x, y)) {
+                        viewport.METERSTOSHOWX /= 2;
+                        viewport.METERSTOSHOWY /= 2;
+                        viewport.pixelsPerMeter /= 2;
+                        levelManager.refreshBitmaps();
                     }
                     else if(increaseGravity.contains(x, y)) {
                         levelManager.player.upGravity += 10;
@@ -186,7 +181,7 @@ public class InputController {
                         levelManager.player.setWorldLocationY(levelManager.player.spawnLocation.y);
                     }
                     else if(pauseArea.contains(x, y)) {
-                        ViewController.currentView = new TitleView(context, ViewController.paint, ViewController.canvas, screenWidth, screenHeight);
+                        ViewController.changeToTitleView();
                         System.out.println("TOUCHED PAUSE");
                     }
                     break;

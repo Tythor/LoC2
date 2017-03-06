@@ -122,10 +122,13 @@ public class LevelManager {
 
         if(blocksExist) {
             for(int i = 0; i < blocks.size(); i++) {
-                String[] line = blocks.get(i).split(", ");
-                String[] index = line[0].split("; ");
+                String[] line = blocks.get(i).split("\\| ");
+                boolean hasInstructions = false;
+                String[] index = line[0].split(", ")[0].split("; ");
+                if(line.length > 1)
+                    hasInstructions = true;
                 gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getBlockType(
-                        line);
+                        line, hasInstructions);
             }
         }
 
@@ -162,19 +165,44 @@ public class LevelManager {
         }
     }
 
-    private GameObject getBlockType(String[] line) {
+    private GameObject getBlockType(String[] line, boolean hasInstructions) {
         // Dummy block
         Block block = new Block(0, 0, " ");
 
-        String[] sLocation = line[1].split("; ");
+        String[] info = line[0].split(", ");
+
+        String[] sLocation = info[1].split("; ");
         Float[] location = {Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])};
 
         String[] blockTypes = {"B", "G", "O", "Pi", "Pu", "R"};
 
         for(int i = 0; i < blockTypes.length; i++) {
-            if(line[2].contains(blockTypes[i])) {
+            if(info[2].contains(blockTypes[i])) {
                 block = new Block(location[0], location[1], blockTypes[i]);
             }
+        }
+
+        String instructionsLine = "";
+        if(hasInstructions) {
+            instructionsLine = line[1];
+            block.setHasInstructions(true);
+            System.out.println(instructionsLine);
+        }
+
+        String[] instructions = instructionsLine.split(", ");
+        if(instructions[0].equals("move")) {
+            block.setHasMovementInstructions(true);
+
+            block.setMoveSpeed(Float.parseFloat(instructions[1]));
+            sLocation = instructions[2].split("; ");
+            block.setMoveToLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
+
+            sLocation = instructions[4].split("; ");
+            block.setTriggerLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
+
+            block.setBoundLocation(new WorldLocation(block.getTriggerLocation().x + Float.parseFloat(sLocation[2]), block.getTriggerLocation().y + Float.parseFloat(sLocation[3])));
+
+            block.applyInstructions();
         }
 
         return block;

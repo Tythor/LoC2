@@ -31,7 +31,7 @@ public class TitleScreenDialogFragment extends DialogFragment {
                 .setPositiveButton("Yes!", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Set game to TitleLevel
-                        ViewController.currentView = new GameView(context, ViewController.paint, ViewController.canvas, screenWidth, screenHeight, "TitleLevel");
+                        ViewController.changeToGameView("TitleLevel");
 
                         // Hide creditsView
                         GameActivity.parentLayout.removeView(TitleView.creditsView);

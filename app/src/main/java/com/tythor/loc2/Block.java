@@ -54,6 +54,16 @@ public class Block extends GameObject {
     int count;
     @Override
     public void update(int FPS) {
+        // Move object
+        if(hasInstructions) {
+            if(hasMovementInstructions) {
+                if(RectF.intersects(GameView.levelManager.player.objectHitbox, triggerBounds) || triggerBounds.contains(GameView.levelManager.player.getWorldLocation().x, GameView.levelManager.player.getWorldLocation().y))
+                    hasIntersected = true;
+                if(hasIntersected)
+                    moveTo(ViewController.FPS, moveToLocation);
+            }
+        }
+
         count++;
         // Check for collision
         /*setPlayerHitboxes();

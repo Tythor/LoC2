@@ -29,6 +29,15 @@ public abstract class GameObject {
     public boolean checkLeftBounds = false;
     public boolean checkRightBounds = false;
 
+    public boolean hasInstructions = false;
+    public boolean hasMovementInstructions = false;
+    public boolean hasIntersected = false;
+    public float moveSpeed;
+    public WorldLocation moveToLocation;
+    public WorldLocation triggerLocation;
+    public WorldLocation boundLocation;
+    public RectF triggerBounds;
+
     // Force the gameObjects to update themselves
     public abstract void update(int FPS);
 
@@ -122,6 +131,26 @@ public abstract class GameObject {
         this.movable = movable;
         this.active = active;
         this.visible = visible;
+    }
+
+    public void applyInstructions() {
+        setYVelocity(moveSpeed);
+
+        triggerBounds = new RectF(triggerLocation.x, triggerLocation.y, boundLocation.x, boundLocation.y);
+
+        // Verify that triggerBounds is correct
+        if(triggerLocation.x > boundLocation.x) {
+            triggerBounds.left = boundLocation.x;
+            triggerBounds.top = triggerLocation.x;
+        }
+        if(triggerLocation.y > boundLocation.y) {
+            triggerBounds.top = boundLocation.y;
+            triggerBounds.bottom = triggerLocation.y;
+        }
+        // If block will move left or up, then make moveSpeed negative
+        if(getWorldLocation().x > moveToLocation.x || getWorldLocation().y > moveToLocation.y)
+            moveSpeed *= -1;
+        setYVelocity(moveSpeed * 45);
     }
 
     // Update GameObject's location
@@ -231,5 +260,53 @@ public abstract class GameObject {
 
     public void setDeadly(boolean deadly) {
         this.deadly = deadly;
+    }
+
+    public boolean hasInstructions() {
+        return hasInstructions;
+    }
+
+    public void setHasInstructions(boolean hasInstructions) {
+        this.hasInstructions = hasInstructions;
+    }
+
+    public boolean hasMovementInstructions() {
+        return hasMovementInstructions;
+    }
+
+    public void setHasMovementInstructions(boolean hasMovementInstructions) {
+        this.hasMovementInstructions = hasMovementInstructions;
+    }
+
+    public float getMoveSpeed() {
+        return moveSpeed;
+    }
+
+    public void setMoveSpeed(float moveSpeed) {
+        this.moveSpeed = moveSpeed;
+    }
+
+    public WorldLocation getMoveToLocation() {
+        return moveToLocation;
+    }
+
+    public void setMoveToLocation(WorldLocation moveToLocation) {
+        this.moveToLocation = moveToLocation;
+    }
+
+    public WorldLocation getTriggerLocation() {
+        return triggerLocation;
+    }
+
+    public void setTriggerLocation(WorldLocation triggerLocation) {
+        this.triggerLocation = triggerLocation;
+    }
+
+    public WorldLocation getBoundLocation() {
+        return boundLocation;
+    }
+
+    public void setBoundLocation(WorldLocation boundLocation) {
+        this.boundLocation = boundLocation;
     }
 }

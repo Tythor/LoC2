@@ -39,17 +39,31 @@ public class Viewport {
     }
 
     public RectF worldToScreen(WorldLocation worldLocation) {
-        float left = (screenCenterX - ((viewportLocation.x - worldLocation.x) * pixelsPerMeter));
+        float left = screenCenterX - (viewportLocation.x - worldLocation.x) * pixelsPerMeter;
 
-        float top = (screenCenterY - ((viewportLocation.y - worldLocation.y) * pixelsPerMeter));
+        float top = screenCenterY - (viewportLocation.y - worldLocation.y) * pixelsPerMeter;
 
-        float right = (left + (worldLocation.width) * pixelsPerMeter);
+        float right = left + worldLocation.width * pixelsPerMeter;
 
-        float bottom = (top + (worldLocation.height) * pixelsPerMeter);
+        float bottom = top + worldLocation.height * pixelsPerMeter;
 
         screenLocation.set(left, top, right, bottom);
 
         return screenLocation;
+    }
+
+    public WorldLocation screenToWorld(RectF screenLocation) {
+        WorldLocation worldLocation = new WorldLocation();
+
+        worldLocation.x = (screenLocation.left - screenCenterX) / pixelsPerMeter + GameView.levelManager.player.getWorldLocation().x;
+
+        worldLocation.y = (screenLocation.top - screenCenterY) / pixelsPerMeter + GameView.levelManager.player.getWorldLocation().y;
+
+        worldLocation.width = (screenLocation.right - screenLocation.left) / pixelsPerMeter;
+
+        worldLocation.height = (screenLocation.bottom - screenLocation.top) / pixelsPerMeter;
+
+        return worldLocation;
     }
 
     public boolean renderObject(WorldLocation worldLocation) {

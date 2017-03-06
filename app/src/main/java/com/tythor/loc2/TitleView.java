@@ -1,6 +1,8 @@
 package com.tythor.loc2;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -9,8 +11,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -82,16 +86,17 @@ public class TitleView extends ViewObject {
         backArea = new RectF(screenWidth - bounds.width() * 2, screenHeight - bounds.height() * bounds.height(), screenWidth, screenHeight);
     }
 
+    @Override
     public void update() {
 
     }
 
+    @Override
     public void draw() {
         float pixelsPerMeter = (float) screenWidth / 568;
 
         float buttonWidth = pixelsPerMeter * 55;
         float buttonHeight = pixelsPerMeter * 25;
-
 
         Typeface typeface = Typeface.createFromAsset(context.getAssets(), "fonts/munro.ttf");
         paint.setTypeface(typeface);
@@ -140,15 +145,6 @@ public class TitleView extends ViewObject {
 
             drawn = true;
         }
-        /*else {
-            paint.setTextSize(pixelsPerMeter * 20);
-            String back = "Back";
-            paint.getTextBounds(back, 0, back.length(), bounds);
-            canvas.drawText(back,
-                            screenWidth - bounds.width(),
-                            screenHeight - bounds.height(),
-                            paint);
-        }*/
     }
 
 
@@ -219,7 +215,31 @@ public class TitleView extends ViewObject {
 
                         if(startArea.contains(x, y)) {
                             System.out.println("START HAS BEEN TOUCHED");
-                            changeViewTo = "gameView";
+
+                            // Temporary level selector
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setTitle("LevelName");
+                            final EditText editText = new EditText(context);
+                            builder.setView(editText);
+                            builder.setPositiveButton("Go", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ViewController.changeToGameView(editText.getText().toString());
+                                }
+                            });
+                            builder.setNeutralButton("Default", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ViewController.changeToGameView("Level6-10");
+                                }
+                            });
+                            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            });
+                            builder.show();
                         }
 
                         if(creditsArea.contains(x, y)) {

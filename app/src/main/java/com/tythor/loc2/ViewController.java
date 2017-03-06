@@ -17,7 +17,7 @@ public class ViewController extends SurfaceView implements Runnable {
     public static Paint paint;
     public static Canvas canvas;
     private SurfaceHolder surfaceHolder;
-    private Context context;
+    private static Context context;
 
     // Thread objects
     private volatile boolean running;
@@ -27,8 +27,8 @@ public class ViewController extends SurfaceView implements Runnable {
     private long frameStartTime;
     public static int FPS = 60;
 
-    private int screenWidth;
-    private int screenHeight;
+    private static int screenWidth;
+    private static int screenHeight;
 
     public static ViewObject currentView;
 
@@ -46,24 +46,17 @@ public class ViewController extends SurfaceView implements Runnable {
         currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
     }
 
-    public void changeView(String viewName) {
-        switch(viewName) {
-            case "titleView":
-                currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
-                break;
-            case "gameView":
-                currentView = new GameView(context, paint, canvas, screenWidth, screenHeight, "Level1-3");
-                break;
-        }
+    public static void changeToTitleView() {
+        currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
+    }
+
+    public static void changeToGameView(String levelName) {
+        currentView = new GameView(context, paint, canvas, screenWidth, screenHeight, levelName);
     }
 
     @Override
     public void run() {
         while(running) {
-            if(currentView.changeViewTo != null) {
-                changeView(currentView.changeViewTo);
-            }
-
             frameStartTime = System.currentTimeMillis();
 
             update();
