@@ -53,19 +53,28 @@ public class GameView extends ViewObject {
     }
 
     private void setSpawnViewportLocation() {
+        RectF min = new RectF(0, 0, 0, 0);
+        RectF max = new RectF(screenWidth, screenHeight, screenWidth, screenHeight);
+
         // You are not expected to understand this.
-        if(!(viewport.screenToWorld(new RectF(0, 0, 0, 0)).x > 0)) {
+        if(!(viewport.screenToWorld(min).x > 0)) {
             viewport.setViewportLocation(new WorldLocation(levelManager.player.getWorldLocation().x - viewport.screenToWorld(
-                    new RectF(0, 0, 0, 0)).x, viewport.getViewportLocation().y));
+                    min).x, viewport.getViewportLocation().y));
         }
-        if(!(viewport.screenToWorld(new RectF(screenWidth, screenHeight, screenWidth, screenHeight)).x < (levelManager.gameObjects.length - 1) * 20)) {
-            viewport.setViewportLocation(new WorldLocation(levelManager.player.getWorldLocation().x - (viewport.screenToWorld(new RectF(screenWidth, screenHeight, screenWidth, screenHeight)).x - (levelManager.gameObjects.length - 1) * 20), viewport.getViewportLocation().y));
+        if(!(viewport.screenToWorld(max).x < (levelManager.gameObjects.length - 1) * 20)) {
+            viewport.setViewportLocation(new WorldLocation(levelManager.player.getWorldLocation().x - (viewport.screenToWorld(
+                    max).x - (levelManager.gameObjects.length - 1) * 20),
+                                                           viewport.getViewportLocation().y));
         }
-        if(!(viewport.screenToWorld(new RectF(0, 0, 0, 0)).y > 0)) {
-            viewport.setViewportLocation(new WorldLocation(viewport.getViewportLocation().x, levelManager.player.getWorldLocation().y - viewport.screenToWorld(new RectF(0, 0, 0, 0)).y));
+        if(!(viewport.screenToWorld(min).y > 0)) {
+            viewport.setViewportLocation(new WorldLocation(viewport.getViewportLocation().x,
+                                                           levelManager.player.getWorldLocation().y - viewport.screenToWorld(
+                                                                   min).y));
         }
-        if(!(viewport.screenToWorld(new RectF(screenWidth, screenHeight, screenWidth, screenHeight)).y < (levelManager.gameObjects[0].length - 1) * 20)) {
-            viewport.setViewportLocation(new WorldLocation(viewport.getViewportLocation().x, levelManager.player.getWorldLocation().y - (viewport.screenToWorld(new RectF(screenWidth, screenHeight, screenWidth, screenHeight)).y - (levelManager.gameObjects[0].length - 1) * 20)));
+        if(!(viewport.screenToWorld(max).y < (levelManager.gameObjects[0].length - 1) * 20)) {
+            viewport.setViewportLocation(new WorldLocation(viewport.getViewportLocation().x,
+                                                           levelManager.player.getWorldLocation().y - (viewport.screenToWorld(
+                                                                   max).y - (levelManager.gameObjects[0].length - 1) * 20)));
         }
     }
 
@@ -94,22 +103,22 @@ public class GameView extends ViewObject {
             for(int j = 0; j < levelManager.gameObjects[i].length; j++) {
                 GameObject gameObject = levelManager.gameObjects[i][j];
                 if(gameObject != null && gameObject.isActive()) {
-                    // For now, always render the player
-                    if(viewport.renderObject(gameObject.getWorldLocation()) || gameObject.equals(levelManager.player)) {
+                    if(viewport.renderObject(gameObject.getWorldLocation())) {
                         gameObject.setVisible(true);
-                        // if((i < levelManager.gameObjects[i].length + 1 && i > 0) && (levelManager.gameObjects[i - 1][j] != null && levelManager.gameObjects[i + 1][j] != null) && (levelManager.gameObjects[i - 1][j].getClass().equals("class com.tythor.loc2.Block") && levelManager.gameObjects[i + 1][j].getClass().equals("class com.tythor.loc2.Block"))) {
-                        if((i < levelManager.gameObjects[i].length + 1 && i > 0) && !(levelManager.gameObjects[i - 1][j] instanceof Block)) {
-                            gameObject.checkLeftBounds = true;
-                        }
-                        if((i < levelManager.gameObjects[i].length + 1 && i > 0) && !(levelManager.gameObjects[i + 1][j] instanceof Block)) {
-                            gameObject.checkRightBounds = true;
-                        }
-
-                        gameObject.update(ViewController.FPS);
                     }
                     else {
                         gameObject.setVisible(false);
                     }
+                    // if((i < levelManager.gameObjects[i].length + 1 && i > 0) && (levelManager.gameObjects[i - 1][j] != null && levelManager.gameObjects[i + 1][j] != null) && (levelManager.gameObjects[i - 1][j].getClass().equals("class com.tythor.loc2.Block") && levelManager.gameObjects[i + 1][j].getClass().equals("class com.tythor.loc2.Block"))) {
+                    if((i < levelManager.gameObjects[i].length + 1 && i > 0) && !(levelManager.gameObjects[i - 1][j] instanceof Block)) {
+                        gameObject.checkLeftBounds = true;
+                    }
+                    if((i < levelManager.gameObjects[i].length + 1 && i > 0) && !(levelManager.gameObjects[i + 1][j] instanceof Block)) {
+                        gameObject.checkRightBounds = true;
+                    }
+
+                    if(gameObject.instructionList != null)
+                        gameObject.update(ViewController.FPS);
                 }
 
                 if(gameObject != null) {

@@ -5,7 +5,11 @@ package com.tythor.loc2;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PointF;
 import android.graphics.RectF;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class GameObject {
     private Context context = GameView.context;
@@ -29,14 +33,14 @@ public abstract class GameObject {
     public boolean checkLeftBounds = false;
     public boolean checkRightBounds = false;
 
-    public boolean hasInstructions = false;
-    public boolean hasMovementInstructions = false;
+    public boolean runningInstruction = false;
     public boolean hasIntersected = false;
     public float moveSpeed;
-    public WorldLocation moveToLocation;
-    public WorldLocation triggerLocation;
-    public WorldLocation boundLocation;
-    public RectF triggerBounds;
+    public ArrayList<Instruction> instructionList = new ArrayList<>();
+    public Instruction currentInstruction;
+
+    public int indexX;
+    public int indexY;
 
     // Force the gameObjects to update themselves
     public abstract void update(int FPS);
@@ -133,45 +137,172 @@ public abstract class GameObject {
         this.visible = visible;
     }
 
-    public void applyInstructions() {
-        setYVelocity(moveSpeed);
-
-        triggerBounds = new RectF(triggerLocation.x, triggerLocation.y, boundLocation.x, boundLocation.y);
-
-        // Verify that triggerBounds is correct
-        if(triggerLocation.x > boundLocation.x) {
-            triggerBounds.left = boundLocation.x;
-            triggerBounds.top = triggerLocation.x;
-        }
-        if(triggerLocation.y > boundLocation.y) {
-            triggerBounds.top = boundLocation.y;
-            triggerBounds.bottom = triggerLocation.y;
-        }
-        // If block will move left or up, then make moveSpeed negative
-        if(getWorldLocation().x > moveToLocation.x || getWorldLocation().y > moveToLocation.y)
-            moveSpeed *= -1;
-        setYVelocity(moveSpeed * 45);
-    }
-
     // Update GameObject's location
     public void move(int FPS) {
         worldLocation.x += xVelocity / FPS;
         worldLocation.y += yVelocity / FPS;
     }
 
-    public void moveTo(int FPS, WorldLocation moveToLocation) {
+    boolean runningInstructionX = true;
+    boolean runningInstructionY = true;
+    public void moveTo(int FPS, PointF destinationLocation, float moveSpeed) {
+        // If gameObject will move left or up, then make moveSpeed negative
+        if(getWorldLocation().x > destinationLocation.x || getWorldLocation().y > destinationLocation.y)
+            moveSpeed *= -1;
+        if(getWorldLocation().x != destinationLocation.x)
+            setXVelocity(moveSpeed * 50);
+        if(getWorldLocation().y != destinationLocation.y)
+            setYVelocity(moveSpeed * 50);
+
         float xDestination = xVelocity / FPS;
         float yDestination = yVelocity / FPS;
 
-        // If xDestination is over moveToLocation, then jump to moveToLocation
-        if(xDestination > 0 && worldLocation.x + xDestination > moveToLocation.x || xDestination < 0 && worldLocation.x + xDestination < moveToLocation.x)
-            worldLocation.x = moveToLocation.x;
-        else
-            worldLocation.x += xDestination;
-        if(yDestination > 0 && worldLocation.y + yDestination > moveToLocation.y || yDestination < 0 && worldLocation.y + yDestination < moveToLocation.y)
-            worldLocation.y = moveToLocation.y;
-        else
-            worldLocation.y += yDestination;
+        // If Destination is over destinationLocation, then jump to destinationLocation
+        // Hack
+        if((xDestination > 0 && worldLocation.x + xDestination >= destinationLocation.x) || (xDestination < 0 && worldLocation.x + xDestination <= destinationLocation.x) || (worldLocation.x >= destinationLocation.x - 2 && worldLocation.x <= destinationLocation.x + 2)) {
+            worldLocation.x = destinationLocation.x;
+            runningInstructionX = false;
+        }
+        else {
+            if(runningInstruction) {
+                worldLocation.x += xDestination;
+                runningInstructionX = true;
+            }
+        }
+
+        if((yDestination > 0 && worldLocation.y + yDestination >= destinationLocation.y) || (yDestination < 0 && worldLocation.y + yDestination <= destinationLocation.y) || (worldLocation.y >= destinationLocation.y - 2 && worldLocation.y <= destinationLocation.y + 2)) {
+            worldLocation.y = destinationLocation.y;
+            runningInstructionY = false;
+        }
+        else {
+            if(runningInstruction) {
+                worldLocation.y += yDestination;
+                runningInstructionY = true;
+            }
+        }
+        if(!runningInstructionX && !runningInstructionY) {
+            runningInstruction = false;
+        }
+    }
+
+    public void teleportTo(PointF destinationLocation) {
+        worldLocation.x = destinationLocation.x;
+        worldLocation.y = destinationLocation.y;
+    }
+
+    long startTime = System.currentTimeMillis();
+    public void alternate(AlternateInstruction alternateInstruction) {
+        if(System.currentTimeMillis() - startTime >= alternateInstruction.time * 1000) {
+            teleportTo(alternateInstruction.destinationLocations.get(destinationLocationIndex));
+            if(this instanceof Spike) {
+                this.bitmapName = prepareBitmapName(alternateInstruction.spikeDirections.get(
+                        destinationLocationIndex));
+                blockType = alternateInstruction.spikeDirections.get(destinationLocationIndex);
+            }
+            startTime = System.currentTimeMillis();
+            destinationLocationIndex = (destinationLocationIndex + 1) % alternateInstruction.destinationLocations.size();
+        }
+    }
+
+    public void createInstruction(String[] line) {
+        String[] instructions = new String[line.length - 1];
+        for(int i = 0; i < instructions.length; i++) {
+            instructions[i] = line[i + 1];
+            System.out.println(instructions[i]);
+        }
+        System.out.println(Arrays.toString(instructions));
+        for(int i = 0; i < instructions.length; i++) {
+            String[] instructionInfo = instructions[i].split(", ");
+            if(instructionInfo[0].equals("move")) {
+                instructionList.add(MoveInstruction.createMoveInstruction(instructionInfo));
+            }
+            if(instructionInfo[0].equals("teleport")) {
+                instructionList.add(TeleportInstruction.createTeleportInstruction(instructionInfo));
+            }
+            if(instructionInfo[0].equals("alternate")) {
+                instructionList.add(AlternateInstruction.createAlternateInstruction(instructionInfo, this));
+            }
+        }
+    }
+
+    int currentInstructionIndex = 0;
+    int destinationLocationIndex = 0;
+    public void executeInstruction() {
+        // If instructions exist
+        if(instructionList.size() > 0) {
+            if(currentInstruction instanceof MoveInstruction) {
+                MoveInstruction moveInstruction = (MoveInstruction) currentInstruction;
+
+                if(moveInstruction.intersectObject != null && (moveInstruction.intersectObject.getWorldLocation() != null && RectF.intersects(moveInstruction.intersectObject.objectHitbox, moveInstruction.triggerBounds) || moveInstruction.triggerBounds.contains(
+                        moveInstruction.intersectObject.getWorldLocation().x,
+                        moveInstruction.intersectObject.getWorldLocation().y)))
+                    hasIntersected = true;
+                if(hasIntersected) {
+                    moveTo(ViewController.FPS,
+                           moveInstruction.destinationLocation,
+                           moveInstruction.moveSpeed);
+                }
+            }
+            if(currentInstruction instanceof TeleportInstruction) {
+                TeleportInstruction teleportInstruction = (TeleportInstruction) currentInstruction;
+
+                if(teleportInstruction.intersectObject != null && (RectF.intersects(teleportInstruction.intersectObject.objectHitbox,
+                                                                                    teleportInstruction.triggerBounds) || teleportInstruction.triggerBounds.contains(
+                        teleportInstruction.intersectObject.getWorldLocation().x,
+                        teleportInstruction.intersectObject.getWorldLocation().y)))
+                    teleportTo(teleportInstruction.destinationLocation);
+            }
+            if(currentInstruction instanceof AlternateInstruction) {
+                AlternateInstruction alternateInstruction = (AlternateInstruction) currentInstruction;
+
+                if(alternateInstruction.intersectObject != null && (RectF.intersects(alternateInstruction.intersectObject.objectHitbox,
+                                                                                    alternateInstruction.triggerBounds) || alternateInstruction.triggerBounds.contains(alternateInstruction.intersectObject.getWorldLocation().x, alternateInstruction.intersectObject.getWorldLocation().y)))
+                    alternate(alternateInstruction);
+            }
+            if(!runningInstruction) {
+                currentInstruction = instructionList.get(currentInstructionIndex);
+                runningInstruction = true;
+                currentInstructionIndex = (currentInstructionIndex + 1) % instructionList.size();
+            }
+        }
+    }
+
+    public String prepareBitmapName(String spikeType) {
+        String bitmapName = "";
+        switch(spikeType) {
+            case "B":
+                bitmapName = "blockblue";
+                break;
+            case "G":
+                bitmapName = "blockgreen";
+                break;
+            case "O":
+                bitmapName = "blockorange";
+                break;
+            case "Pi":
+                bitmapName = "blockpink";
+                break;
+            case "Pu":
+                bitmapName = "blockpurple";
+                break;
+            case "R":
+                bitmapName = "blockred";
+                break;
+
+            case "3":
+                bitmapName = "spikeleft";
+                break;
+            case "1":
+                bitmapName = "spikeup";
+                break;
+            case "4":
+                bitmapName = "spikeright";
+                break;
+            case "2":
+                bitmapName = "spikedown";
+                break;
+        }
+        return bitmapName;
     }
 
     public WorldLocation getWorldLocation() {
@@ -180,10 +311,6 @@ public abstract class GameObject {
 
     public String getBitmapName() {
         return bitmapName;
-    }
-
-    public void setBitmapName(String bitmapName) {
-        this.bitmapName = bitmapName;
     }
 
     public float getWidth() {
@@ -262,51 +389,11 @@ public abstract class GameObject {
         this.deadly = deadly;
     }
 
-    public boolean hasInstructions() {
-        return hasInstructions;
-    }
-
-    public void setHasInstructions(boolean hasInstructions) {
-        this.hasInstructions = hasInstructions;
-    }
-
-    public boolean hasMovementInstructions() {
-        return hasMovementInstructions;
-    }
-
-    public void setHasMovementInstructions(boolean hasMovementInstructions) {
-        this.hasMovementInstructions = hasMovementInstructions;
-    }
-
     public float getMoveSpeed() {
         return moveSpeed;
     }
 
     public void setMoveSpeed(float moveSpeed) {
         this.moveSpeed = moveSpeed;
-    }
-
-    public WorldLocation getMoveToLocation() {
-        return moveToLocation;
-    }
-
-    public void setMoveToLocation(WorldLocation moveToLocation) {
-        this.moveToLocation = moveToLocation;
-    }
-
-    public WorldLocation getTriggerLocation() {
-        return triggerLocation;
-    }
-
-    public void setTriggerLocation(WorldLocation triggerLocation) {
-        this.triggerLocation = triggerLocation;
-    }
-
-    public WorldLocation getBoundLocation() {
-        return boundLocation;
-    }
-
-    public void setBoundLocation(WorldLocation boundLocation) {
-        this.boundLocation = boundLocation;
     }
 }

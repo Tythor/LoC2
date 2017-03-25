@@ -1,6 +1,5 @@
 package com.tythor.loc2;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 
 /**
@@ -32,19 +31,19 @@ public class Animation {
 
                 if(gameObject.getBitmapName().equals("playerleft1")) {
                     levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerLeft2;
-                    gameObject.setBitmapName("playerleft2");
+                    gameObject.prepareBitmapName("playerleft2");
                 }
                 else if(gameObject.getBitmapName().equals("playerleft2")) {
                     levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerLeft1;
-                    gameObject.setBitmapName("playerleft1");
+                    gameObject.prepareBitmapName("playerleft1");
                 }
                 if(gameObject.getBitmapName().equals("playerright1")) {
                     levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerRight2;
-                    gameObject.setBitmapName("playerright2");
+                    gameObject.prepareBitmapName("playerright2");
                 }
                 else if(gameObject.getBitmapName().equals("playerright2")) {
                     levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerRight1;
-                    gameObject.setBitmapName("playerright1");
+                    gameObject.prepareBitmapName("playerright1");
                 }
             }
         }
@@ -53,13 +52,13 @@ public class Animation {
         if(gameObject.equals(levelManager.player)) {
             if(gameObject.getFacing() == 1 && (gameObject.getBitmapName().equals("playerright1") || gameObject.getBitmapName().equals(
                     "playerright2") || (levelManager.player.pressingLeft == false && levelManager.player.pressingRight == false))) {
-                gameObject.setBitmapName("playerleft1");
+                gameObject.prepareBitmapName("playerleft1");
                 levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerLeft1;
             }
             else if(gameObject.getFacing() == 2 && (gameObject.getBitmapName().equals("playerleft1") || gameObject.getBitmapName().equals(
                     "playerleft2") || (levelManager.player.pressingLeft == false && levelManager.player.pressingRight == false))) {
                 levelManager.bitmapArray[levelManager.getBitmapIndex("p")] = playerRight1;
-                gameObject.setBitmapName("playerright1");
+                gameObject.prepareBitmapName("playerright1");
             }
         }
     }

@@ -2,15 +2,11 @@ package com.tythor.loc2;
 
 // Created by Tythor on 8/25/2016
 
-import android.graphics.Point;
-import android.graphics.PointF;
 import android.graphics.RectF;
 
 import static com.tythor.loc2.GameView.levelManager;
 
 public class Block extends GameObject {
-    WorldLocation worldLocation;
-
     RectF leftHitbox = new RectF();
     RectF topHitbox = new RectF();
     RectF rightHitbox = new RectF();
@@ -20,33 +16,8 @@ public class Block extends GameObject {
         // Blocks are 1 x 1
         final float WIDTH = 20;
         final float HEIGHT = 20;
-        worldLocation = new WorldLocation(startLocationX, startLocationY, 1, WIDTH, HEIGHT);
-        String bitmapName = "";
-
-        switch(blockType) {
-            case "B":
-                bitmapName = "blockblue";
-                break;
-
-            case "G":
-                bitmapName = "blockgreen";
-                break;
-
-            case "O":
-                bitmapName = "blockorange";
-                break;
-
-            case "Pi":
-                bitmapName = "blockpink";
-                break;
-
-            case "Pu":
-                bitmapName = "blockpurple";
-                break;
-            case "R":
-                bitmapName = "blockred";
-                break;
-        }
+        WorldLocation worldLocation = new WorldLocation(startLocationX, startLocationY, 1, WIDTH, HEIGHT);
+        String bitmapName = prepareBitmapName(blockType);
 
         setupGameObject(blockType, bitmapName, worldLocation);
     }
@@ -54,15 +25,8 @@ public class Block extends GameObject {
     int count;
     @Override
     public void update(int FPS) {
-        // Move object
-        if(hasInstructions) {
-            if(hasMovementInstructions) {
-                if(RectF.intersects(GameView.levelManager.player.objectHitbox, triggerBounds) || triggerBounds.contains(GameView.levelManager.player.getWorldLocation().x, GameView.levelManager.player.getWorldLocation().y))
-                    hasIntersected = true;
-                if(hasIntersected)
-                    moveTo(ViewController.FPS, moveToLocation);
-            }
-        }
+        executeInstruction();
+
 
         count++;
         // Check for collision
@@ -128,30 +92,30 @@ public class Block extends GameObject {
     }
 
     public void setObjectHitboxes() {
-        objectHitbox.left = worldLocation.x;
-        objectHitbox.top = worldLocation.y;
-        objectHitbox.right = worldLocation.x + worldLocation.width;
-        objectHitbox.bottom = worldLocation.y + worldLocation.height;
+        objectHitbox.left = getWorldLocation().x;
+        objectHitbox.top = getWorldLocation().y;
+        objectHitbox.right = getWorldLocation().x + getWorldLocation().width;
+        objectHitbox.bottom = getWorldLocation().y + getWorldLocation().height;
 
-        leftHitbox.left = worldLocation.x;
-        leftHitbox.top = worldLocation.y;
-        leftHitbox.right = worldLocation.x + 3;
-        leftHitbox.bottom = worldLocation.y + worldLocation.height;
+        leftHitbox.left = getWorldLocation().x;
+        leftHitbox.top = getWorldLocation().y;
+        leftHitbox.right = getWorldLocation().x + 3;
+        leftHitbox.bottom = getWorldLocation().y + getWorldLocation().height;
 
-        topHitbox.left = worldLocation.x;
-        topHitbox.top = worldLocation.y;
-        topHitbox.right = worldLocation.x + worldLocation.width;
-        topHitbox.bottom = worldLocation.y + 10;
+        topHitbox.left = getWorldLocation().x;
+        topHitbox.top = getWorldLocation().y;
+        topHitbox.right = getWorldLocation().x + getWorldLocation().width;
+        topHitbox.bottom = getWorldLocation().y + 10;
 
-        rightHitbox.left = worldLocation.x + worldLocation.width - 3;
-        rightHitbox.top = worldLocation.y;
-        rightHitbox.right = worldLocation.x + worldLocation.width;
-        rightHitbox.bottom = worldLocation.y + worldLocation.height;
+        rightHitbox.left = getWorldLocation().x + getWorldLocation().width - 3;
+        rightHitbox.top = getWorldLocation().y;
+        rightHitbox.right = getWorldLocation().x + getWorldLocation().width;
+        rightHitbox.bottom = getWorldLocation().y + getWorldLocation().height;
 
-        bottomHitbox.left = worldLocation.x;
-        bottomHitbox.top = worldLocation.y + worldLocation.height - 10;
-        bottomHitbox.right = worldLocation.x + worldLocation.width;
-        bottomHitbox.bottom = worldLocation.y + worldLocation.height;
+        bottomHitbox.left = getWorldLocation().x;
+        bottomHitbox.top = getWorldLocation().y + getWorldLocation().height - 10;
+        bottomHitbox.right = getWorldLocation().x + getWorldLocation().width;
+        bottomHitbox.bottom = getWorldLocation().y + getWorldLocation().height;
     }
 
     public void setPlayerHitboxes() {
@@ -176,6 +140,11 @@ public class Block extends GameObject {
         levelManager.player.bottomHitbox.top = playerLocation.y + playerLocation.height;
         levelManager.player.bottomHitbox.right = levelManager.player.bottomHitbox.left + playerLocation.width;
         levelManager.player.bottomHitbox.bottom = levelManager.player.bottomHitbox.top;
+
+        levelManager.player.objectHitbox.left = playerLocation.x;
+        levelManager.player.objectHitbox.top = playerLocation.y;
+        levelManager.player.objectHitbox.right = playerLocation.x + playerLocation.width;
+        levelManager.player.objectHitbox.bottom = playerLocation.y + playerLocation.height;
     }
 
 }

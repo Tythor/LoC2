@@ -18,8 +18,6 @@ public abstract class ViewObject {
     int screenWidth;
     int screenHeight;
 
-    String changeViewTo;
-
     public void setObjects(Context context, Paint paint, Canvas canvas, int screenWidth, int screenHeight) {
         this.context = context;
         this.paint = paint;

@@ -224,13 +224,16 @@ public class TitleView extends ViewObject {
                             builder.setPositiveButton("Go", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ViewController.changeToGameView(editText.getText().toString());
+                                    if(editText.getText().toString().contains("-"))
+                                        ViewController.changeToGameView("Level" + editText.getText().toString());
+                                    else
+                                        ViewController.changeToGameView(editText.getText().toString());
                                 }
                             });
                             builder.setNeutralButton("Default", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ViewController.changeToGameView("Level6-10");
+                                    ViewController.changeToGameView("Level1-5");
                                 }
                             });
                             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

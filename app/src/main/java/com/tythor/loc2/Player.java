@@ -6,12 +6,12 @@ import android.content.Context;
 import android.graphics.RectF;
 
 public class Player extends GameObject {
-    final int X_VELOCITY = 100;
+    final int X_VELOCITY = 110;
     final int X_AXIS = 1;
     final int Y_AXIS = 2;
     // In milliseconds
     final long maxJumpTime = 1000;
-    float upGravity = 100f; // 10.6f
+    float upGravity = 318f; // 10.6f
     float downGravity;
     boolean pressingRight = false;
     boolean pressingLeft = false;
@@ -83,23 +83,33 @@ public class Player extends GameObject {
         }*/
         if(jumping) {
             long timeJumping = System.currentTimeMillis() - timeOfJump;
-            if(Math.abs(getWorldLocation().y - locationOfJump) < 70) {
+            if(Math.abs(getWorldLocation().y - locationOfJump) < 75) {
                 setYVelocity(-(upGravity + addedGravity));
             }
             else {
                 setYVelocity(upGravity);
-                System.out.println("capped");
-                System.out.println(addedGravity + " " + timeJumping / 1000.00);
+                /*System.out.println("capped");
+                System.out.println(addedGravity + " " + timeJumping / 1000.00);*/
                 addedGravity = 0;
                 jumping = false;
             }
-            addedGravity += 10f;
+            addedGravity += -.116 * 60;
         }
         else {
             setYVelocity(upGravity);
         }
 
         move(FPS);
+    }
+
+    public void startJump() {
+        if(!falling) {
+            if(!jumping) {
+                jumping = true;
+                timeOfJump = System.currentTimeMillis();
+                locationOfJump = getWorldLocation().y;
+            }
+        }
     }
 
     public void checkForCollisions(GameObject gameObject, boolean setHitbox) {
@@ -194,15 +204,5 @@ public class Player extends GameObject {
 
     public void setPressingLeft(boolean pressingLeft) {
         this.pressingLeft = pressingLeft;
-    }
-
-    public void startJump() {
-        if(!falling) {
-            if(!jumping) {
-                jumping = true;
-                timeOfJump = System.currentTimeMillis();
-                locationOfJump = getWorldLocation().y;
-            }
-        }
     }
 }

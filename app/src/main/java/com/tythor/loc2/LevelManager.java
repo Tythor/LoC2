@@ -18,11 +18,11 @@ public class LevelManager {
 
     final int TOTALBITMAPS = 25;
 
-    Player player;
+    public static Player player;
     // ArrayList<GameObject> gameObjects;
     ArrayList<String> blocks = new ArrayList<>();
     ArrayList<String> spikes = new ArrayList<>();
-    GameObject[][] gameObjects;
+    public static GameObject[][] gameObjects;
     ArrayList<Rect> currentButtons;
     Bitmap[] bitmapArray;
     private String levelName;
@@ -111,24 +111,38 @@ public class LevelManager {
         if(spikesExist) {
             for(int i = 0; i < spikes.size(); i++) {
                 String[] line = spikes.get(i).split("\\| ");
-                boolean hasInstructions = false;
                 String[] index = line[0].split(", ")[0].split("; ");
-                if(line.length > 1)
-                    hasInstructions = true;
-                gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getSpikeType(
-                        line, hasInstructions);
+
+                gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getSpikeType(line);
             }
         }
 
         if(blocksExist) {
             for(int i = 0; i < blocks.size(); i++) {
                 String[] line = blocks.get(i).split("\\| ");
-                boolean hasInstructions = false;
                 String[] index = line[0].split(", ")[0].split("; ");
+
+                gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getBlockType(line);
+            }
+        }
+
+        if(spikesExist) {
+            for(int i = 0; i < spikes.size(); i++) {
+                String[] line = spikes.get(i).split("\\| ");
+                String[] index = line[0].split(", ")[0].split("; ");
+
                 if(line.length > 1)
-                    hasInstructions = true;
-                gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])] = getBlockType(
-                        line, hasInstructions);
+                    gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])].createInstruction(line);
+            }
+        }
+
+        if(blocksExist) {
+            for(int i = 0; i < blocks.size(); i++) {
+                String[] line = blocks.get(i).split("\\| ");
+                String[] index = line[0].split(", ")[0].split("; ");
+
+                if(line.length > 1)
+                    gameObjects[Integer.parseInt(index[0])][Integer.parseInt(index[1])].createInstruction(line);
             }
         }
 
@@ -153,6 +167,8 @@ public class LevelManager {
             for(int j = 0; j < gameObjects[i].length; j++) {
                 if(gameObjects[i][j] != null) {
                     blockType = gameObjects[i][j].getBlockType();
+                    gameObjects[i][j].indexX = i;
+                    gameObjects[i][j].indexY = j;
 
                     // Check if bitmap has already been prepared
                     if(bitmapArray[getBitmapIndex(blockType)] == null) {
@@ -165,14 +181,14 @@ public class LevelManager {
         }
     }
 
-    private GameObject getBlockType(String[] line, boolean hasInstructions) {
+    private GameObject getBlockType(String[] line) {
         // Dummy block
         Block block = new Block(0, 0, " ");
 
         String[] info = line[0].split(", ");
 
-        String[] sLocation = info[1].split("; ");
-        Float[] location = {Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])};
+        String[] sPointF = info[1].split("; ");
+        Float[] location = {Float.parseFloat(sPointF[0]), Float.parseFloat(sPointF[1])};
 
         String[] blockTypes = {"B", "G", "O", "Pi", "Pu", "R"};
 
@@ -182,40 +198,17 @@ public class LevelManager {
             }
         }
 
-        String instructionsLine = "";
-        if(hasInstructions) {
-            instructionsLine = line[1];
-            block.setHasInstructions(true);
-            System.out.println(instructionsLine);
-        }
-
-        String[] instructions = instructionsLine.split(", ");
-        if(instructions[0].equals("move")) {
-            block.setHasMovementInstructions(true);
-
-            block.setMoveSpeed(Float.parseFloat(instructions[1]));
-            sLocation = instructions[2].split("; ");
-            block.setMoveToLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
-
-            sLocation = instructions[4].split("; ");
-            block.setTriggerLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
-
-            block.setBoundLocation(new WorldLocation(block.getTriggerLocation().x + Float.parseFloat(sLocation[2]), block.getTriggerLocation().y + Float.parseFloat(sLocation[3])));
-
-            block.applyInstructions();
-        }
-
         return block;
     }
 
-    private GameObject getSpikeType(String[] line, boolean hasInstructions) {
+    private GameObject getSpikeType(String[] line) {
         // Dummy spike
         Spike spike = new Spike(0, 0, " ");
 
         String[] info = line[0].split(", ");
 
-        String[] sLocation = info[1].split("; ");
-        Float[] location = {Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])};
+        String[] sPointF = info[1].split("; ");
+        Float[] location = {Float.parseFloat(sPointF[0]), Float.parseFloat(sPointF[1])};
 
         String[] spikeTypes = {"1", "2", "3", "4"};
 
@@ -223,29 +216,6 @@ public class LevelManager {
             if(info[2].contains(spikeTypes[i])) {
                 spike = new Spike(location[0], location[1], spikeTypes[i]);
             }
-        }
-
-        String instructionsLine = "";
-        if(hasInstructions) {
-            instructionsLine = line[1];
-            spike.setHasInstructions(true);
-            System.out.println(instructionsLine);
-        }
-
-        String[] instructions = instructionsLine.split(", ");
-        if(instructions[0].equals("move")) {
-            spike.setHasMovementInstructions(true);
-
-            spike.setMoveSpeed(Float.parseFloat(instructions[1]));
-            sLocation = instructions[2].split("; ");
-            spike.setMoveToLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
-
-            sLocation = instructions[4].split("; ");
-            spike.setTriggerLocation(new WorldLocation(Float.parseFloat(sLocation[0]), Float.parseFloat(sLocation[1])));
-
-            spike.setBoundLocation(new WorldLocation(spike.getTriggerLocation().x + Float.parseFloat(sLocation[2]), spike.getTriggerLocation().y + Float.parseFloat(sLocation[3])));
-
-            spike.applyInstructions();
         }
 
         return spike;
@@ -310,44 +280,24 @@ public class LevelManager {
                 index = 8;
                 break;
 
-            case "l":
+            case "3":
                 index = 10;
                 break;
 
-            case "u":
+            case "1":
                 index = 11;
                 break;
 
-            case "r":
+            case "4":
                 index = 12;
                 break;
 
-            case "d":
+            case "2":
                 index = 13;
                 break;
         }
 
         return index;
-    }
-
-    public Bitmap getBitmap(String blockType) {
-        int index = 0;
-
-        switch(blockType) {
-            case ".":
-                index = 0;
-                break;
-
-            case "p":
-                index = 1;
-                break;
-
-            case "1":
-                index = 3;
-                break;
-        }
-
-        return bitmapArray[index];
     }
 
     public boolean isPlaying() {
