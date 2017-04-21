@@ -10,8 +10,9 @@ import android.media.SoundPool;
 
 import java.io.IOException;
 
+import static com.tythor.loc2.GameActivity.context;
+
 public class SoundManager {
-    private Context context = GameView.context;
     private SoundPool soundPool;
 
     int sound = -1;

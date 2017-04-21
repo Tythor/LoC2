@@ -6,12 +6,12 @@ import android.content.Context;
 import android.graphics.RectF;
 
 public class Player extends GameObject {
-    final int X_VELOCITY = 110;
+    final int X_VELOCITY = 120;
     final int X_AXIS = 1;
     final int Y_AXIS = 2;
     // In milliseconds
     final long maxJumpTime = 1000;
-    float upGravity = 318f; // 10.6f
+    float upGravity = 180f; // 10.6f
     float downGravity;
     boolean pressingRight = false;
     boolean pressingLeft = false;
@@ -93,7 +93,7 @@ public class Player extends GameObject {
                 addedGravity = 0;
                 jumping = false;
             }
-            addedGravity += -.116 * 60;
+            addedGravity += .116 * 60;
         }
         else {
             setYVelocity(upGravity);

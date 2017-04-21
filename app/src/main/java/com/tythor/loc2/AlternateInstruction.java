@@ -44,11 +44,15 @@ public class AlternateInstruction extends Instruction {
             for(int i = 1; i < instructions.length; i++) {
                 String commaSeparated = instructions[i].split(",")[0];
                 if(commaSeparated.contains(";")) {
-                     sPointF = commaSeparated.split("; ");
+                    sPointF = commaSeparated.split("; ");
                     destinationLocations.add(new PointF(Float.parseFloat(sPointF[0]),
                                                         Float.parseFloat(sPointF[1])));
                     if(gameObject instanceof Spike) {
-                        spikeDirections.add(sPointF[2]);
+                        // If no spike direction is included, don't change spike direction
+                        if(sPointF.length > 2)
+                            spikeDirections.add(sPointF[2]);
+                        else
+                            spikeDirections.add(gameObject.getBlockType());
                     }
                 }
                 else {

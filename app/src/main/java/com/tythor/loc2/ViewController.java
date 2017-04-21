@@ -17,7 +17,6 @@ public class ViewController extends SurfaceView implements Runnable {
     public static Paint paint;
     public static Canvas canvas;
     private SurfaceHolder surfaceHolder;
-    private static Context context;
 
     // Thread objects
     private volatile boolean running;
@@ -35,7 +34,6 @@ public class ViewController extends SurfaceView implements Runnable {
     public ViewController() {
         // Pass context to SurfaceView
         super(GameActivity.context);
-        context = GameActivity.context;
         this.screenWidth = GameActivity.screenWidth;
         this.screenHeight = GameActivity.screenHeight;
 
@@ -43,15 +41,15 @@ public class ViewController extends SurfaceView implements Runnable {
         surfaceHolder = getHolder();
         paint = new Paint();
 
-        currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
+        currentView = new TitleView();
     }
 
     public static void changeToTitleView() {
-        currentView = new TitleView(context, paint, canvas, screenWidth, screenHeight);
+        currentView = new TitleView();
     }
 
     public static void changeToGameView(String levelName) {
-        currentView = new GameView(context, paint, canvas, screenWidth, screenHeight, levelName);
+        currentView = new GameView(levelName);
     }
 
     @Override
@@ -95,12 +93,11 @@ public class ViewController extends SurfaceView implements Runnable {
             // Lock the canvas
             canvas = surfaceHolder.lockCanvas();
 
-            // Destroy last frame
+            // Destroy last frames
             destroyFrame(Color.argb(255, 0, 0, 0));
             //canvas.save();
             //canvas.scale(1.5f, 1.5f);
 
-            currentView.setObjects(context, paint, canvas, screenWidth, screenHeight);
             currentView.draw();
             //canvas.restore();
 

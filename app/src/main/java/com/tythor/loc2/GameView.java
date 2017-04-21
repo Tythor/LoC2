@@ -2,18 +2,21 @@ package com.tythor.loc2;
 
 // Created by Tythor on 8/25/2016
 
-import android.content.Context;
-import android.graphics.Canvas;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
-public class GameView extends ViewObject {
-    public static Context context;
+import static com.tythor.loc2.GameActivity.screenHeight;
+import static com.tythor.loc2.GameActivity.screenWidth;
+import static com.tythor.loc2.ViewController.canvas;
+import static com.tythor.loc2.ViewController.paint;
 
+public class GameView extends ViewObject {
     boolean follow = false;
     private boolean debugging = true;
     // Custom objects
@@ -23,21 +26,23 @@ public class GameView extends ViewObject {
     public static SoundManager soundManager;
     public static Viewport viewport;
 
-    public GameView(Context context, Paint paint, Canvas canvas, int screenWidth, int screenHeight, String levelName) {
-        this.context = context;
-        this.paint = paint;
-        this.canvas = canvas;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
+    public static long startTime = System.currentTimeMillis();
+    public static boolean resetTime;
 
+    public static long differenceTime;
+
+    private String levelName;
+
+    public GameView(String levelName) {
         viewport = new Viewport(screenWidth, screenHeight);
 
         soundManager = new SoundManager();
         soundManager.loadSound();
-
+        this.levelName = levelName;
         loadLevel(levelName);
     }
 
+    Bitmap[] tempBitmapArray;
     public void loadLevel(String levelName) {
         // Unnecessary?
         levelManager = null;
@@ -50,6 +55,10 @@ public class GameView extends ViewObject {
 
         viewport.setViewportLocation(levelManager.player.spawnLocation);
         setSpawnViewportLocation();
+        tempBitmapArray = new Bitmap[3];
+        tempBitmapArray[0] = levelManager.player.prepareBitmap("area1chaileft1", 1);
+        tempBitmapArray[1] = levelManager.player.prepareBitmap("area2chaileft1", 1);
+        tempBitmapArray[2] = levelManager.player.prepareBitmap("area3chaileft1", 1);
     }
 
     private void setSpawnViewportLocation() {
@@ -96,8 +105,16 @@ public class GameView extends ViewObject {
 
     public static int updateCount = 0;
 
+    long deltaTime = 0;
+    long sTime = 0;
+
     @Override
     public void update() {
+        sTime = System.currentTimeMillis();
+
+        // Used for alternating objects
+        differenceTime = System.currentTimeMillis() - GameView.startTime;
+
         // If gameObject is on-screen, then render it
         for(int i = 0; i < levelManager.gameObjects.length; i++) {
             for(int j = 0; j < levelManager.gameObjects[i].length; j++) {
@@ -117,8 +134,10 @@ public class GameView extends ViewObject {
                         gameObject.checkRightBounds = true;
                     }
 
-                    if(gameObject.instructionList != null)
+                    if(gameObject.equals(levelManager.player) || gameObject.instructionList.size() > 0 || (gameObject.getWorldLocation().x - levelManager.player.getWorldLocation().x <= 10 && gameObject.getWorldLocation().x - levelManager.player.getWorldLocation().x >= -10) || (gameObject.getWorldLocation().y - levelManager.player.getWorldLocation().y <= 10 && gameObject.getWorldLocation().y - levelManager.player.getWorldLocation().y >= -10))
                         gameObject.update(ViewController.FPS);
+                    //deltaTime = System.currentTimeMillis() - sTime;
+
                 }
 
                 if(gameObject != null) {
@@ -145,6 +164,7 @@ public class GameView extends ViewObject {
                 }
             }
         }
+
         //System.out.println(levelManager.player.getWorldLocation().x - viewport.worldToScreen(new WorldLocation(screenWidth / 2, 0)).left);
         //System.out.println(updateCount);
         updateCount = 0;
@@ -176,6 +196,9 @@ public class GameView extends ViewObject {
         /*viewport.setViewportLocation(new WorldLocation(levelManager.player.getWorldLocation().x,
                                                        viewport.getViewportLocation().y));*/
         updateViewportLocation();
+        if(levelName.equals("TitleMovie")) {
+            playTitleMovie();
+        }
     }
 
     private void updateViewportLocation() {
@@ -248,6 +271,10 @@ public class GameView extends ViewObject {
                             960,
                             290,
                             paint);
+            canvas.drawText("DeltaTime: " + deltaTime,
+                            960,
+                            330,
+                            paint);
 
                 /*Player player = (Player) levelManager.gameObjects.get(levelManager.playerIndex);
                 canvas.drawRect(player.rectLeft, paint);
@@ -256,7 +283,7 @@ public class GameView extends ViewObject {
                 canvas.drawRect(player.rectBottom, paint);
                 System.out.println(player.rectLeft);*/
 
-            //for reset the number of clipped objects each frame
+            //for reset the number of clipped objects each frames
             viewport.resetNumberOfClippedObjects();
         }
 
@@ -265,8 +292,36 @@ public class GameView extends ViewObject {
     }
 
 
+    WorldLocation oldPos;
+    ArrayList<WorldLocation> savedLocations = new ArrayList<>();
+    int currentLocation = 13;
+
     private void drawObjects() {
+        oldPos = new WorldLocation(levelManager.player.getWorldLocation().x,
+                                   levelManager.player.getWorldLocation().y);
+        savedLocations.add(oldPos);
         RectF bitmapTemplate = new RectF();
+
+        if(savedLocations.size() >= 100) {
+            bitmapTemplate.set(viewport.worldToScreen(savedLocations.get(currentLocation - 100)));
+            canvas.drawBitmap(tempBitmapArray[2],
+                              bitmapTemplate.left,
+                              bitmapTemplate.top,
+                              paint);
+        }
+        if(savedLocations.size() >= currentLocation) {
+            bitmapTemplate.set(viewport.worldToScreen(savedLocations.get(currentLocation - 7)));
+            canvas.drawBitmap(tempBitmapArray[0],
+                              bitmapTemplate.left,
+                              bitmapTemplate.top,
+                              paint);
+            bitmapTemplate.set(viewport.worldToScreen(savedLocations.get(currentLocation - 13)));
+            canvas.drawBitmap(tempBitmapArray[1],
+                              bitmapTemplate.left,
+                              bitmapTemplate.top,
+                              paint);
+            currentLocation++;
+        }
         for(int layer = 0; layer <= 2; layer++) {
             for(int i = 0; i < levelManager.gameObjects.length; i++) {
                 for(int j = 0; j < levelManager.gameObjects[i].length; j++) {
@@ -373,6 +428,50 @@ public class GameView extends ViewObject {
                                 text.setTextSize(15);
                                 canvas.drawText(i + ", " + j, bitmapTemplate.left, bitmapTemplate.bottom, text);
 
+                                // Delete me/debugging
+                                if(gameObject instanceof Spike) {
+                                    paint.setColor(Color.CYAN);
+                                    Spike gameObjectSpike = (Spike) gameObject;
+                                    //bitmapTemplate.set(viewport.worldToScreen(gameObjectSpike.AB));
+                                    //System.out.println((A.y - B.y) / (A.x - B.x));
+                                    Point[] slope = new Point[3];
+                                    switch(gameObjectSpike.getBlockType()) {
+                                        case "1":
+                                            slope[0] = new Point(1, 2);
+                                            slope[1] = new Point(1, -2);
+                                            slope[2] = new Point(2, 0);
+                                            break;
+                                        case "2":
+                                            slope[0] = new Point(-1, -2);
+                                            slope[1] = new Point(-1, 2);
+                                            slope[2] = new Point(-2, 0);
+                                            break;
+                                        case "3":
+                                            slope[0] = new Point(-2, 1);
+                                            slope[1] = new Point(2, 1);
+                                            slope[2] = new Point(0, 2);
+                                            break;
+                                        case "4":
+                                            slope[0] = new Point(2, -1);
+                                            slope[1] = new Point(-2, -1);
+                                            slope[2] = new Point(0, -2);
+                                            break;
+                                    }
+                                    Line ABLine = new Line(gameObjectSpike.A, gameObjectSpike.B, slope[0].x, slope[0].y);
+                                    Line BCLine = new Line(gameObjectSpike.B, gameObjectSpike.C, slope[1].x, slope[1].y);
+                                    Line ACLine = new Line(gameObjectSpike.A, gameObjectSpike.C, slope[2].x, slope[2].y);
+                                    ABLine.draw();
+                                    BCLine.draw();
+                                    ACLine.draw();
+                                    boolean a = ABLine.intersects(levelManager.player.objectHitbox);
+                                    boolean b = BCLine.intersects(levelManager.player.objectHitbox);
+                                    boolean c = ACLine.intersects(levelManager.player.objectHitbox);
+                                    if(a || b || c) {
+                                        // Do intersecti/die
+                                        //System.out.println("Spike intersection");
+                                    }
+                                }
+
                         /*canvas.drawLine(0, 0, inputController.leftArea.left, inputController.leftArea.bottom, paint);
                         canvas.drawLine(inputController.rightArea.left, 0, inputController.rightArea.left, inputController.rightArea.bottom, paint);
                         canvas.drawLine(inputController.rightArea.right, 0, inputController.rightArea.right, inputController.rightArea.bottom, paint);
@@ -406,6 +505,35 @@ public class GameView extends ViewObject {
         }
     }
 
+    int frameIndex = 0;
+    private void playTitleMovie() {
+        if(loopCount >= levelManager.frames.get(frameIndex)) {
+            System.out.println(levelManager.frames.get(frameIndex));
+            switch(levelManager.movements.get(frameIndex)) {
+                case 1:
+                    levelManager.player.setPressingLeft(true);
+                    levelManager.player.setPressingRight(false);
+                    break;
+                case 2:
+                    levelManager.player.setPressingLeft(false);
+                    levelManager.player.setPressingRight(true);
+                    break;
+                case 3:
+                    levelManager.player.setPressingLeft(false);
+                    levelManager.player.setPressingRight(false);
+                    break;
+                case 4:
+                    levelManager.player.startJump();
+                    break;
+                case 5:
+                    levelManager.player.startJump();
+                    break;
+                case 6:
+                    break;
+            }
+            frameIndex++;
+        }
+    }
 
     public boolean onTouchEvent(MotionEvent motionEvent) {
         // Verify that levelManager is initialized

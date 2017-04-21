@@ -11,25 +11,9 @@ import android.view.SurfaceHolder;
  */
 
 public abstract class ViewObject {
-    Context context;
-    Paint paint;
-    Canvas canvas;
-
-    int screenWidth;
-    int screenHeight;
-
-    public void setObjects(Context context, Paint paint, Canvas canvas, int screenWidth, int screenHeight) {
-        this.context = context;
-        this.paint = paint;
-        this.canvas = canvas;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-    }
-
     public abstract void update();
 
     public abstract void draw();
 
     public abstract boolean onTouchEvent(MotionEvent motionEvent);
-
 }

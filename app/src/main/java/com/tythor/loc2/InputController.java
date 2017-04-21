@@ -2,7 +2,6 @@ package com.tythor.loc2;
 
 // Created by Tythor on 8/25/2016
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.RectF;
@@ -10,11 +9,12 @@ import android.view.MotionEvent;
 
 import java.util.ArrayList;
 
+import static com.tythor.loc2.GameActivity.context;
+import static com.tythor.loc2.GameView.levelManager;
+import static com.tythor.loc2.GameView.viewport;
+
 public class InputController {
-    Context context = GameView.context;
-    LevelManager levelManager = GameView.levelManager;
-    Viewport viewport = GameView.viewport;
-    float pixelsPerMeter = GameView.viewport.pixelsPerMeter;
+    float pixelsPerMeter = viewport.pixelsPerMeter;
 
     RectF left;
     RectF right;

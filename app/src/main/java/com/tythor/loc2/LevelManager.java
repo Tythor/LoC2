@@ -2,7 +2,6 @@ package com.tythor.loc2;
 
 // Created by Tythor on 8/25/2016
 
-import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
@@ -13,9 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-public class LevelManager {
-    Context context = GameView.context;
+import static com.tythor.loc2.GameActivity.context;
 
+public class LevelManager {
     final int TOTALBITMAPS = 25;
 
     public static Player player;
@@ -39,6 +38,11 @@ public class LevelManager {
         }
 
         WorldLocation spawnLocation = parseLevel(levelName);
+
+        if(levelName.equals("TitleMovie")) {
+            spawnLocation = parseLevel("TitleLevel");
+            parseTitleMovie();
+        }
 
         bitmapArray = new Bitmap[TOTALBITMAPS];
 
@@ -105,7 +109,6 @@ public class LevelManager {
     }
 
     private void loadGameObjects(WorldLocation spawnLocation) {
-
         player = new Player(spawnLocation);
 
         if(spikesExist) {
@@ -298,6 +301,26 @@ public class LevelManager {
         }
 
         return index;
+    }
+
+    ArrayList<Integer> movements = new ArrayList<>();
+    ArrayList<Integer> frames = new ArrayList<>();
+    private void parseTitleMovie() {
+        AssetManager assetManager = context.getAssets();
+        try {
+            InputStream inputStream = assetManager.open("levels/" + levelName + ".txt");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
+            String line = "";
+
+            while((line = bufferedReader.readLine()) != null) {
+                movements.add(Integer.parseInt(line.split(", ")[0]));
+                frames.add(Integer.parseInt(line.split(", ")[1]));
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public boolean isPlaying() {

@@ -13,7 +13,6 @@ import com.tythor.loc2.titleScreenUtils.ChaiButton;
 import com.tythor.loc2.titleScreenUtils.TitleScreenDialogFragment;
 
 public class GameActivity extends Activity {
-
     private ViewController viewController;
     public static RelativeLayout parentLayout;
 

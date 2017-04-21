@@ -2,6 +2,7 @@ package com.tythor.loc2;
 
 // Created by Tythor on 8/25/2016
 
+import android.graphics.PointF;
 import android.graphics.RectF;
 
 public class Viewport {
@@ -50,6 +51,29 @@ public class Viewport {
         screenLocation.set(left, top, right, bottom);
 
         return screenLocation;
+    }
+
+    // Temp for Line
+    public RectF intersectionToScreen(PointF intersectionPoint) {
+        float left = screenCenterX - (viewportLocation.x - intersectionPoint.x) * pixelsPerMeter;
+
+        float top = screenCenterY - (viewportLocation.y - intersectionPoint.y) * pixelsPerMeter;
+
+        float right = left + 10 * pixelsPerMeter;
+
+        float bottom = top + 10 * pixelsPerMeter;
+
+        screenLocation.set(left, top, right, bottom);
+
+        return screenLocation;
+    }
+
+    public PointF pointToScreen(PointF pointF) {
+        float x = screenCenterX - (viewportLocation.x - pointF.x) * pixelsPerMeter;
+
+        float y = screenCenterY - (viewportLocation.y - pointF.y) * pixelsPerMeter;
+
+        return new PointF(x, y);
     }
 
     public WorldLocation screenToWorld(RectF screenLocation) {

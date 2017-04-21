@@ -18,6 +18,12 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import static com.tythor.loc2.GameActivity.context;
+import static com.tythor.loc2.GameActivity.screenHeight;
+import static com.tythor.loc2.GameActivity.screenWidth;
+import static com.tythor.loc2.ViewController.canvas;
+import static com.tythor.loc2.ViewController.paint;
+
 /**
  * Created by Tyler on 2/4/2017.
  */
@@ -41,17 +47,8 @@ public class TitleView extends ViewObject {
 
     public static boolean overlayOn = false;
 
-    public TitleView(Context context, Paint paint, Canvas canvas, int screenWidth, int screenHeight) {
-        this.context = context;
-        this.paint = paint;
-        this.canvas = canvas;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-
-        prepareBounds();
-    }
-
-    private void prepareBounds() {
+    public TitleView() {
+        // Prepare bounds
         menuFrame = prepareBitmap("menuframe1");
         title = prepareBitmap("title");
         onChai = prepareBitmap("onchai");

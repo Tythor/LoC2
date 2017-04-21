@@ -11,9 +11,9 @@ import android.graphics.RectF;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public abstract class GameObject {
-    private Context context = GameView.context;
+import static com.tythor.loc2.GameActivity.context;
 
+public abstract class GameObject {
     // Facing
     final int LEFT = 1;
     final int RIGHT = 2;
@@ -34,7 +34,6 @@ public abstract class GameObject {
     public boolean checkRightBounds = false;
 
     public boolean runningInstruction = false;
-    public boolean hasIntersected = false;
     public float moveSpeed;
     public ArrayList<Instruction> instructionList = new ArrayList<>();
     public Instruction currentInstruction;
@@ -150,33 +149,35 @@ public abstract class GameObject {
         if(getWorldLocation().x > destinationLocation.x || getWorldLocation().y > destinationLocation.y)
             moveSpeed *= -1;
         if(getWorldLocation().x != destinationLocation.x)
-            setXVelocity(moveSpeed * 50);
+            setXVelocity(moveSpeed * 75);
         if(getWorldLocation().y != destinationLocation.y)
-            setYVelocity(moveSpeed * 50);
+            setYVelocity(moveSpeed * 75);
 
-        float xDestination = xVelocity / FPS;
-        float yDestination = yVelocity / FPS;
+        float xSpeed = xVelocity / FPS;
+        float ySpeed = yVelocity / FPS;
 
-        // If Destination is over destinationLocation, then jump to destinationLocation
+        // If Destination is over or equal to destinationLocation, then jump to destinationLocation
         // Hack
-        if((xDestination > 0 && worldLocation.x + xDestination >= destinationLocation.x) || (xDestination < 0 && worldLocation.x + xDestination <= destinationLocation.x) || (worldLocation.x >= destinationLocation.x - 2 && worldLocation.x <= destinationLocation.x + 2)) {
+        // || (worldLocation.x >= destinationLocation.x - 2 && worldLocation.x <= destinationLocation.x + 2)
+        if((xSpeed > 0 && worldLocation.x + xSpeed >= destinationLocation.x) || (xSpeed < 0 && worldLocation.x + xSpeed <= destinationLocation.x) || worldLocation.x == destinationLocation.x) {
             worldLocation.x = destinationLocation.x;
             runningInstructionX = false;
         }
         else {
             if(runningInstruction) {
-                worldLocation.x += xDestination;
+                worldLocation.x += xSpeed;
                 runningInstructionX = true;
             }
         }
 
-        if((yDestination > 0 && worldLocation.y + yDestination >= destinationLocation.y) || (yDestination < 0 && worldLocation.y + yDestination <= destinationLocation.y) || (worldLocation.y >= destinationLocation.y - 2 && worldLocation.y <= destinationLocation.y + 2)) {
+        // || (worldLocation.y >= destinationLocation.y - 2 && worldLocation.y <= destinationLocation.y + 2)
+        if((ySpeed > 0 && worldLocation.y + ySpeed >= destinationLocation.y) || (ySpeed < 0 && worldLocation.y + ySpeed <= destinationLocation.y) || worldLocation.y == destinationLocation.y) {
             worldLocation.y = destinationLocation.y;
             runningInstructionY = false;
         }
         else {
             if(runningInstruction) {
-                worldLocation.y += yDestination;
+                worldLocation.y += ySpeed;
                 runningInstructionY = true;
             }
         }
@@ -191,14 +192,24 @@ public abstract class GameObject {
     }
 
     long startTime = System.currentTimeMillis();
+    //static boolean allGo = false;
+    //static float time;
+    int alternationCount = 0;
+    //System.getCurrenTimeMillis() - startTime
     public void alternate(AlternateInstruction alternateInstruction) {
-        if(System.currentTimeMillis() - startTime >= alternateInstruction.time * 1000) {
+        if(alternationCount == 0)
+            alternationCount = (int) Math.floor(GameView.differenceTime / (alternateInstruction.time * 1000));
+        if(alternationCount > 0 && GameView.differenceTime / alternationCount >= alternateInstruction.time * 1000) {
+            alternationCount++;
             teleportTo(alternateInstruction.destinationLocations.get(destinationLocationIndex));
             if(this instanceof Spike) {
                 this.bitmapName = prepareBitmapName(alternateInstruction.spikeDirections.get(
                         destinationLocationIndex));
                 blockType = alternateInstruction.spikeDirections.get(destinationLocationIndex);
             }
+            GameView.resetTime = true;
+            //allGo = true;
+            //time = alternateInstruction.time;
             startTime = System.currentTimeMillis();
             destinationLocationIndex = (destinationLocationIndex + 1) % alternateInstruction.destinationLocations.size();
         }
@@ -227,6 +238,9 @@ public abstract class GameObject {
 
     int currentInstructionIndex = 0;
     int destinationLocationIndex = 0;
+    private boolean hasIntersected = false;
+    private boolean hasAlternated = false;
+
     public void executeInstruction() {
         // If instructions exist
         if(instructionList.size() > 0) {
@@ -235,15 +249,20 @@ public abstract class GameObject {
 
                 if(moveInstruction.intersectObject != null && (moveInstruction.intersectObject.getWorldLocation() != null && RectF.intersects(moveInstruction.intersectObject.objectHitbox, moveInstruction.triggerBounds) || moveInstruction.triggerBounds.contains(
                         moveInstruction.intersectObject.getWorldLocation().x,
-                        moveInstruction.intersectObject.getWorldLocation().y)))
+                        moveInstruction.intersectObject.getWorldLocation().y) || moveInstruction.intersectObject.objectHitbox.intersects(moveInstruction.triggerBounds.left, moveInstruction.triggerBounds.top, moveInstruction.triggerBounds.right, moveInstruction.triggerBounds.bottom)))
                     hasIntersected = true;
                 if(hasIntersected) {
                     moveTo(ViewController.FPS,
                            moveInstruction.destinationLocation,
                            moveInstruction.moveSpeed);
                 }
+                /*else {
+                    currentInstruction = instructionList.get(currentInstructionIndex);
+                    runningInstruction = true;
+                    currentInstructionIndex = (currentInstructionIndex + 1) % instructionList.size();
+                }*/
             }
-            if(currentInstruction instanceof TeleportInstruction) {
+            else if(currentInstruction instanceof TeleportInstruction) {
                 TeleportInstruction teleportInstruction = (TeleportInstruction) currentInstruction;
 
                 if(teleportInstruction.intersectObject != null && (RectF.intersects(teleportInstruction.intersectObject.objectHitbox,
@@ -251,12 +270,19 @@ public abstract class GameObject {
                         teleportInstruction.intersectObject.getWorldLocation().x,
                         teleportInstruction.intersectObject.getWorldLocation().y)))
                     teleportTo(teleportInstruction.destinationLocation);
+                /*else {
+                    currentInstruction = instructionList.get(currentInstructionIndex);
+                    runningInstruction = true;
+                    currentInstructionIndex = (currentInstructionIndex + 1) % instructionList.size();
+                }*/
             }
-            if(currentInstruction instanceof AlternateInstruction) {
+            else if(currentInstruction instanceof AlternateInstruction) {
                 AlternateInstruction alternateInstruction = (AlternateInstruction) currentInstruction;
 
                 if(alternateInstruction.intersectObject != null && (RectF.intersects(alternateInstruction.intersectObject.objectHitbox,
                                                                                     alternateInstruction.triggerBounds) || alternateInstruction.triggerBounds.contains(alternateInstruction.intersectObject.getWorldLocation().x, alternateInstruction.intersectObject.getWorldLocation().y)))
+                    hasAlternated = true;
+                if(hasAlternated)
                     alternate(alternateInstruction);
             }
             if(!runningInstruction) {
@@ -267,42 +293,40 @@ public abstract class GameObject {
         }
     }
 
-    public String prepareBitmapName(String spikeType) {
-        String bitmapName = "";
-        switch(spikeType) {
+    public String prepareBitmapName(String blockType) {
+        switch(blockType) {
             case "B":
-                bitmapName = "blockblue";
+                blockType = "blockblue";
                 break;
             case "G":
-                bitmapName = "blockgreen";
+                blockType = "blockgreen";
                 break;
             case "O":
-                bitmapName = "blockorange";
+                blockType = "blockorange";
                 break;
             case "Pi":
-                bitmapName = "blockpink";
+                blockType = "blockpink";
                 break;
             case "Pu":
-                bitmapName = "blockpurple";
+                blockType = "blockpurple";
                 break;
             case "R":
-                bitmapName = "blockred";
+                blockType = "blockred";
                 break;
-
             case "3":
-                bitmapName = "spikeleft";
+                blockType = "spikeleft";
                 break;
             case "1":
-                bitmapName = "spikeup";
+                blockType = "spikeup";
                 break;
             case "4":
-                bitmapName = "spikeright";
+                blockType = "spikeright";
                 break;
             case "2":
-                bitmapName = "spikedown";
+                blockType = "spikedown";
                 break;
         }
-        return bitmapName;
+        return blockType;
     }
 
     public WorldLocation getWorldLocation() {
